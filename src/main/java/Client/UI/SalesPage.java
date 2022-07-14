@@ -76,6 +76,7 @@ public class SalesPage extends JFrame implements ActionListener {
         totalValueLabel.setFont(DesignUI.defaultFontBold);
         totalValueLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
+
         totalPanel = new JPanel(new GridLayout(1,2, 10, 5));
         totalPanel.add(totalLabel);
         totalPanel.add(totalValueLabel);

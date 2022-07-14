@@ -108,10 +108,10 @@ public class NewSalesPage extends JPanel implements ActionListener {
         scrollPaneRight = new JScrollPane(table);
 
         totalLabel = new JLabel("Total:");
-        totalLabel.setFont(DesignUI.bigFont);
+        totalLabel.setFont(DesignUI.defaultFontBold);
         totalLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         totalValueLabel = new JLabel("RM0.00");
-        totalValueLabel.setFont(DesignUI.bigFont);
+        totalValueLabel.setFont(DesignUI.defaultFontBold);
         totalValueLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
         totalPanel = new JPanel(new GridLayout(1,2, 10, 5));
