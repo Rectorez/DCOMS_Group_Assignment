@@ -12,5 +12,9 @@ public class Main {
         //RegisterPage r = new RegisterPage();
         //InventoryPage i = new InventoryPage();
         //ViewItemPage vItem = new ViewItemPage();
+        // eItem = new EditItemPage();
+        //SalesPage s = new SalesPage();
+        //NewSalesPage ns = new NewSalesPage();
+
     }
 }

@@ -1,4 +1,4 @@
-package Client;
+package Client.UI;
 
 import Client.UI.DesignUI;
 import Client.UI.DesignUI.DiscardBtn;
@@ -38,13 +38,13 @@ public class ViewItemPage extends JFrame implements ActionListener {
         selectLabel = new JLabel("Select Inventory");
         selectLabel.setFont(DesignUI.defaultFont);
 
-        invenComboBox = new JComboBox();
+        invenComboBox = new JComboBox(new String[]{"Item 1", "Item 2"});
         invenComboBox.setFont(DesignUI.defaultFont);
         invenComboBox.setBorder(new EmptyBorder(10,5,10,5));
 
-        selectPanel = new JPanel(new GridLayout(2, 1, 5, 5));
-        selectPanel.add(selectLabel);
-        selectPanel.add(invenComboBox);
+        selectPanel = new JPanel(new BorderLayout( 5, 5));
+        selectPanel.add(selectLabel, BorderLayout.NORTH);
+        selectPanel.add(invenComboBox, BorderLayout.CENTER);
 
         table = new JTable();
         table.setFont(DesignUI.defaultFont);

@@ -1,7 +1,6 @@
 package Client.UI;
 
 import Client.UI.Compound.TilePanel;
-import Client.ViewItemPage;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -124,12 +123,13 @@ public class MenuPage extends JFrame implements MouseListener, ComponentListener
 
         }
         else if(e.getSource() == editItem){
-//            new InventoryPage();
-//            dispose();
+            new EditItemPage();
+            dispose();
 
         }
         else if(e.getSource() == sales){
-
+            new SalesPage();
+            dispose();
         }
         else if(e.getSource() == logout){
             new LoginPage();

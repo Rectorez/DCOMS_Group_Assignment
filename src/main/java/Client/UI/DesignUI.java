@@ -105,4 +105,21 @@ public class DesignUI {
             setBorder(new CompoundBorder(new LineBorder(DesignUI.blue), new EmptyBorder(10,5,10,5)));
         }
     }
+
+    public static class BlueButton extends  JButton{
+        public BlueButton(){
+            setText("");
+            setFont(DesignUI.defaultFont);
+            setForeground(DesignUI.fontWhiteColor);
+            setBackground(DesignUI.blue);
+            setBorder(new CompoundBorder(new LineBorder(DesignUI.blue), new EmptyBorder(10,5,10,5)));
+        }
+        public BlueButton(String text){
+            setText(text);
+            setFont(DesignUI.defaultFont);
+            setForeground(DesignUI.fontWhiteColor);
+            setBackground(DesignUI.blue);
+            setBorder(new CompoundBorder(new LineBorder(DesignUI.blue), new EmptyBorder(10,5,10,5)));
+        }
+    }
 }

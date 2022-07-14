@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Locale;
 
 public class LoginPage extends JFrame implements ActionListener, MouseListener {
 
@@ -60,6 +61,7 @@ public class LoginPage extends JFrame implements ActionListener, MouseListener {
         incorrectLabel = new JLabel("Incorrect username or password");
         incorrectLabel.setFont(DesignUI.tooltipFont);
         incorrectLabel.setForeground(DesignUI.red);
+        incorrectLabel.setHorizontalAlignment(SwingConstants.CENTER);
         incorrectLabel.setVisible(false);
 
         loginButton = new JButton("Login");
@@ -138,6 +140,11 @@ public class LoginPage extends JFrame implements ActionListener, MouseListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == loginButton){
+            if(usernameTF.getText().equals("F".toLowerCase())){
+                incorrectLabel.setVisible(true);
+                return;
+            }
+            incorrectLabel.setVisible(false);
             new MenuPage();
             dispose();
         }

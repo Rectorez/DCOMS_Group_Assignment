@@ -4,6 +4,7 @@ import Client.UI.DesignUI.AddBtn;
 import Client.UI.DesignUI.ConfirmBtn;
 import Client.UI.DesignUI.DeleteBtn;
 import Client.UI.DesignUI.DiscardBtn;
+import Client.UI.Utility.MyListCellRenderer;
 import InventoryPackage.Inventory;
 
 import javax.swing.*;
@@ -26,7 +27,7 @@ public class InventoryPage extends JFrame implements ActionListener {
     DeleteBtn delBtn;
     DiscardBtn discardBtn;
     ConfirmBtn confirmBtn;
-    JLabel titleLabel, idLabel, nameLabel, descLabel, statusLabel, statusValLabel, createdLabel, createdValLabel, delLabel, delValLabel;
+    JLabel titleLabel, idLabel, nameLabel, descLabel,countLabel, countValLabel, statusLabel, statusValLabel, createdLabel, createdValLabel, delLabel, delValLabel;
     JTextField idTF, nameTF;
     JTextArea descTA;
 
@@ -44,7 +45,9 @@ public class InventoryPage extends JFrame implements ActionListener {
         titleLabel = new JLabel("Inventories");
         titleLabel.setFont(DesignUI.titleFont);
 
-        list = new JList();
+        list = new JList(new Integer[]{1,2,3,4,5,6,7,8,9});
+        list.setFont(DesignUI.defaultFont);
+        list.setCellRenderer(new MyListCellRenderer());
         scrollPane = new JScrollPane();
         scrollPane.setViewportView(list);
 
@@ -69,6 +72,9 @@ public class InventoryPage extends JFrame implements ActionListener {
         descLabel = new JLabel("Description:");
         descLabel.setFont(DesignUI.defaultFont);
         descLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        countLabel = new JLabel("Item Count:");
+        countLabel.setFont(DesignUI.defaultFont);
+        countLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         statusLabel = new JLabel("Status:");
         statusLabel.setFont(DesignUI.defaultFont);
         statusLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -91,6 +97,8 @@ public class InventoryPage extends JFrame implements ActionListener {
         descTA.setFont(DesignUI.defaultFont);
         descTA.setBorder(b);
         descTA.setLineWrap(true);
+        countValLabel = new JLabel("current count");
+        countValLabel.setFont(DesignUI.defaultFont);
         statusValLabel = new JLabel("current status");
         statusValLabel.setFont(DesignUI.defaultFont);
         createdValLabel = new JLabel("created date");
@@ -120,10 +128,12 @@ public class InventoryPage extends JFrame implements ActionListener {
         c.gridy = 2;
         fieldPanel.add(descLabel, c);
         c.gridy = 3;
-        fieldPanel.add(statusLabel, c);
+        fieldPanel.add(countLabel, c);
         c.gridy = 4;
-        fieldPanel.add(createdLabel, c);
+        fieldPanel.add(statusLabel, c);
         c.gridy = 5;
+        fieldPanel.add(createdLabel, c);
+        c.gridy = 6;
         fieldPanel.add(delLabel, c);
 
         c.weightx = 0.65;
@@ -136,10 +146,12 @@ public class InventoryPage extends JFrame implements ActionListener {
         c.gridy = 2;
         fieldPanel.add(descTA, c);
         c.gridy = 3;
-        fieldPanel.add(statusValLabel, c);
+        fieldPanel.add(countValLabel, c);
         c.gridy = 4;
-        fieldPanel.add(createdValLabel, c);
+        fieldPanel.add(statusValLabel, c);
         c.gridy = 5;
+        fieldPanel.add(createdValLabel, c);
+        c.gridy = 6;
         fieldPanel.add(delValLabel, c);
 
         buttonPanel = new JPanel(new GridLayout(1, 3, 20, 5));
