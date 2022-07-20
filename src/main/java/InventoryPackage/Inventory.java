@@ -26,35 +26,50 @@ public class Inventory {
         DeleteDate = deleteDate;
     }
 
-    public String getID() {
+    public String GetID() {
         return ID;
     }
-    public String getName() {
+    public String GetName() {
         return Name;
     }
-    public String getDescription() {
+    public String GetDescription() {
         return Description;
     }
-    public List<Item> getItemList() {
+    public List<Item> GetItemList() {
         return ItemList;
     }
-    public String getStatus() {
+    public String GetStatus() {
         return Status;
     }
-    public LocalDateTime getCreateDate() {
+    public LocalDateTime GetCreateDate() {
         return CreateDate;
     }
-    public LocalDateTime getDeleteDate() {
+    public LocalDateTime GetDeleteDate() {
         return DeleteDate;
     }
 
-    public void AddItem(Item newItem) {
+    public boolean AddItem(Item newItem) {
+        if (!newItem.GetInventoryID().equals(ID))
+            return false;
 
+        ItemList.add(newItem);
+        return true;
     }
-    public void UpdateItem(Item oldItem, Item newItem) {
+    public boolean UpdateItem(Item oldItem, Item newItem) {
+        if (!oldItem.GetInventoryID().equals(ID) ||
+                !newItem.GetInventoryID().equals(ID) ||
+                !ItemList.contains(oldItem))
+            return false;
 
+        ItemList.set(ItemList.indexOf(oldItem), newItem);
+        return true;
     }
-    public void DeleteItem(Item item) {
+    public boolean DeleteItem(Item item) {
+        if (!item.GetInventoryID().equals(ID) ||
+                ItemList.contains(item))
+            return false;
 
+        ItemList.remove(item);
+        return true;
     }
 }

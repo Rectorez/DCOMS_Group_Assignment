@@ -24,4 +24,26 @@ public class Item {
         StoredQuantity = storedQuantity;
         SoldQuantity = soldQuantity;
     }
+
+    public String GetID() {
+        return ID;
+    }
+    public String GetInventoryID() {
+        return InventoryID;
+    }
+    public String GetName() {
+        return Name;
+    }
+    public Double GetPrice() {
+        return Price;
+    }
+    public Double GetCost() {
+        return Cost;
+    }
+    public Integer GetStoredQuantity() {
+        return StoredQuantity;
+    }
+    public Integer GetSoldQuantity() {
+        return SoldQuantity;
+    }
 }

@@ -13,14 +13,16 @@ public abstract class Account {
     private LocalDateTime CreateDate;
     private LocalDateTime DeleteDate;
 
-    public Account() {
-    }
-    public Account(String firstName, String lastName, String username, String email, String password) {
+    public Account(String IC, String firstName, String lastName, String username, String email, String password) {
+        this.IC = IC;
         FirstName = firstName;
         LastName = lastName;
         Username = username;
         Email = email;
         Password = password;
+        Status = "N/A";
+        CreateDate = LocalDateTime.now();
+        DeleteDate = null;
     }
     public Account(String IC, String firstName, String lastName, String username, String email,
                    String password, String status, LocalDateTime createDate, LocalDateTime deleteDate) {
@@ -35,31 +37,31 @@ public abstract class Account {
         DeleteDate = deleteDate;
     }
 
-    public String getIC() {
+    public String GetIC() {
         return IC;
     }
-    public String getFirstName() {
+    public String GetFirstName() {
         return FirstName;
     }
-    public String getLastName() {
+    public String GetLastName() {
         return LastName;
     }
-    public String getUsername() {
+    public String GetUsername() {
         return Username;
     }
-    public String getEmail() {
+    public String GetEmail() {
         return Email;
     }
-    public String getPassword() {
+    public String GetPassword() {
         return Password;
     }
-    public String getStatus() {
+    public String GetStatus() {
         return Status;
     }
-    public LocalDateTime getCreateDate() {
+    public LocalDateTime GetCreateDate() {
         return CreateDate;
     }
-    public LocalDateTime getDeleteDate() {
+    public LocalDateTime GetDeleteDate() {
         return DeleteDate;
     }
 
@@ -70,6 +72,6 @@ public abstract class Account {
         return true;
     }
     public boolean Login(String email, String password) {
-        return true;
+        return AccountHandler.VerifyAccountWithEmail(email, password);
     }
 }
