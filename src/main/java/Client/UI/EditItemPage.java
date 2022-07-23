@@ -11,6 +11,8 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -18,7 +20,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class EditItemPage extends JFrame implements ActionListener {
+public class EditItemPage extends JFrame implements ActionListener, ListSelectionListener {
     JLabel titleLabel;
     JPanel rootPanel, contentPanel, leftPanel, rightPanel, selectPanel, fieldPanel, buttonPanel;
     JList list;
@@ -58,6 +60,7 @@ public class EditItemPage extends JFrame implements ActionListener {
         list = new JList();
         list.setFont(DesignUI.defaultFont);
         list.setCellRenderer(new MyListCellRenderer());
+        list.addListSelectionListener(this);
         scrollPane = new JScrollPane(list);
 
         addBtn = new AddBtn("Add New Item");
@@ -217,5 +220,10 @@ public class EditItemPage extends JFrame implements ActionListener {
             new MenuPage();
             dispose();
         }
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+
     }
 }

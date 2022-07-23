@@ -63,7 +63,12 @@ public class SalesPage extends JFrame implements ActionListener {
         invoiceLabel = new JLabel("Invoice");
         invoiceLabel.setFont(DesignUI.defaultFontBold);
 
-        table = new JTable();
+        table = new JTable(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         table.setFont(DesignUI.defaultFont);
         table.setFillsViewportHeight(true);
 
