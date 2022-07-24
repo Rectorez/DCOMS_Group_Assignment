@@ -1,6 +1,7 @@
 package InventoryPackage;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Inventory {
@@ -12,9 +13,22 @@ public class Inventory {
     private LocalDateTime CreateDate;
     private LocalDateTime DeleteDate;
 
+    private String GenerateID() {
+        int value = InventoryHandler.GetInventories().size() + 1;
+        int length = 4;
+        StringBuilder ID = new StringBuilder("INV-");
+        ID.append("0".repeat(length - String.valueOf(value).length()));
+        ID.append(value);
+        return ID.toString();
+    }
     public Inventory(String name, String description) {
+        ID = GenerateID();
         Name = name;
         Description = description;
+        ItemList = new ArrayList<>();
+        Status = "N/A";
+        CreateDate = LocalDateTime.now();
+        DeleteDate = null;
     }
     public Inventory(String ID, String name, String description, List<Item> itemList, String status, LocalDateTime createDate, LocalDateTime deleteDate) {
         this.ID = ID;

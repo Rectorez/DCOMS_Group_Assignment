@@ -9,11 +9,27 @@ public class Item {
     private Integer StoredQuantity;
     private Integer SoldQuantity;
 
+    private String GenerateID() {
+        int value = InventoryHandler.GetInventories()
+                .stream()
+                .map(i -> i.GetItemList().size())
+                .reduce(Integer::sum)
+                .orElse(0)
+                + 1;
+        int length = 8;
+        StringBuilder ID = new StringBuilder("ITM-");
+        ID.append("0".repeat(length - String.valueOf(value).length()));
+        ID.append(value);
+        return ID.toString();
+    }
     public Item(String inventoryID, String name, Double price, Double cost) {
+        ID = GenerateID();
         InventoryID = inventoryID;
         Name = name;
         Price = price;
         Cost = cost;
+        StoredQuantity = 0;
+        SoldQuantity = 0;
     }
     public Item(String ID, String inventoryID, String name, Double price, Double cost, Integer storedQuantity, Integer soldQuantity) {
         this.ID = ID;
