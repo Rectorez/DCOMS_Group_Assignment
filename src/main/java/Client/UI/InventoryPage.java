@@ -12,13 +12,15 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class InventoryPage extends JFrame implements ActionListener {
+public class InventoryPage extends JFrame implements ActionListener, ListSelectionListener {
 
     JPanel rootPanel, contentPanel, leftPanel, rightPanel, fieldPanel, buttonPanel;
     JList list;
@@ -48,6 +50,7 @@ public class InventoryPage extends JFrame implements ActionListener {
         list = new JList(new Integer[]{1,2,3,4,5,6,7,8,9});
         list.setFont(DesignUI.defaultFont);
         list.setCellRenderer(new MyListCellRenderer());
+        list.addListSelectionListener(this);
         scrollPane = new JScrollPane();
         scrollPane.setViewportView(list);
 
@@ -205,5 +208,10 @@ public class InventoryPage extends JFrame implements ActionListener {
             new MenuPage();
             dispose();
         }
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+
     }
 }

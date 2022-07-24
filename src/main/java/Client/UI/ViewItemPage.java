@@ -46,7 +46,12 @@ public class ViewItemPage extends JFrame implements ActionListener {
         selectPanel.add(selectLabel, BorderLayout.NORTH);
         selectPanel.add(invenComboBox, BorderLayout.CENTER);
 
-        table = new JTable();
+        table = new JTable(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         table.setFont(DesignUI.defaultFont);
         table.setFillsViewportHeight(true);
 

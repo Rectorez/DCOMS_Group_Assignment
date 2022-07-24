@@ -9,13 +9,15 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class NewSalesPage extends JPanel implements ActionListener {
+public class NewSalesPage extends JPanel implements ActionListener, ListSelectionListener {
 
     JPanel rootPanel, contentPanel, leftPanel, quantityPanel, getQuantityPanel, invenPanel, itemPanel, rightPanel, totalPanel, rightContentPanel, buttonPanel;
     JList list;
@@ -48,6 +50,7 @@ public class NewSalesPage extends JPanel implements ActionListener {
         list = new JList();
         list.setFont(DesignUI.defaultFont);
         list.setCellRenderer(new MyListCellRenderer());
+        list.addListSelectionListener(this);
         scrollPaneLeft = new JScrollPane();
         scrollPaneLeft.setViewportView(list);
 
@@ -101,7 +104,12 @@ public class NewSalesPage extends JPanel implements ActionListener {
         invoiceLabel = new JLabel("Invoice");
         invoiceLabel.setFont(DesignUI.defaultFontBold);
 
-        table = new JTable();
+        table = new JTable(){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         table.setFont(DesignUI.defaultFont);
         table.setFillsViewportHeight(true);
 
@@ -181,6 +189,11 @@ public class NewSalesPage extends JPanel implements ActionListener {
             JDialog d = (JDialog) SwingUtilities.getRoot(this);
             d.dispose();
         }
+
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
 
     }
 }
