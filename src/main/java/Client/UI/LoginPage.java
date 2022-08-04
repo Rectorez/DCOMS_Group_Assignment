@@ -2,6 +2,7 @@ package Client.UI;
 
 import Client.UI.Compound.PanelRound;
 import Client.UI.Compound.PanelRoundBorder;
+import Server.GUIInterface;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -12,10 +13,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Locale;
 
-public class LoginPage extends JFrame implements ActionListener, MouseListener {
+public class LoginPage extends UnicastRemoteObject implements ActionListener, MouseListener, GUIInterface {
 
+    JFrame frame = new JFrame();
     JPanel rootPanel, leftPanel, rightPanel;
     JLabel logo;
     PanelRoundBorder loginCard;
@@ -26,10 +30,10 @@ public class LoginPage extends JFrame implements ActionListener, MouseListener {
     JButton loginButton;
     JLabel incorrectLabel, registerLabel;
 
-    public LoginPage(){
-        setSize(1280, 720);
-        setTitle("Login Page");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    public LoginPage() throws RemoteException {
+        frame.setSize(1280, 720);
+        frame.setTitle("Login Page");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         logo = new JLabel("Logo here");
         logo.setHorizontalAlignment(SwingConstants.CENTER);
@@ -115,10 +119,10 @@ public class LoginPage extends JFrame implements ActionListener, MouseListener {
         loginCard = new PanelRoundBorder(loginCardContent, DesignUI.blue);
 
         rightPanel = new JPanel(new BorderLayout());
-        rightPanel.add(Box.createRigidArea(new Dimension(0, (int)(this.getHeight() * 0.2))), BorderLayout.NORTH);
-        rightPanel.add(Box.createRigidArea(new Dimension(0, (int)(this.getHeight() * 0.2))), BorderLayout.SOUTH);
-        rightPanel.add(Box.createRigidArea(new Dimension((int)(this.getHeight() * 0.1), 0)), BorderLayout.EAST);
-        rightPanel.add(Box.createRigidArea(new Dimension((int)(this.getHeight() * 0.1), 0)), BorderLayout.WEST);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, (int)(frame.getHeight() * 0.2))), BorderLayout.NORTH);
+        rightPanel.add(Box.createRigidArea(new Dimension(0, (int)(frame.getHeight() * 0.2))), BorderLayout.SOUTH);
+        rightPanel.add(Box.createRigidArea(new Dimension((int)(frame.getHeight() * 0.1), 0)), BorderLayout.EAST);
+        rightPanel.add(Box.createRigidArea(new Dimension((int)(frame.getHeight() * 0.1), 0)), BorderLayout.WEST);
         rightPanel.add(loginCard, BorderLayout.CENTER);
 
         rootPanel = new JPanel(new GridBagLayout());
@@ -131,9 +135,9 @@ public class LoginPage extends JFrame implements ActionListener, MouseListener {
         rootC.weightx = 0.55;
         rootPanel.add(rightPanel, rootC);
 
-        add(rootPanel);
-        setVisible(true);
-        validate();
+        frame.add(rootPanel);
+        //frame.setVisible(true);
+        frame.validate();
 
     }
 
@@ -146,14 +150,14 @@ public class LoginPage extends JFrame implements ActionListener, MouseListener {
             }
             incorrectLabel.setVisible(false);
             new MenuPage();
-            dispose();
+            frame.dispose();
         }
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
         new RegisterPage();
-        dispose();
+        frame.dispose();
     }
 
     @Override
@@ -174,5 +178,9 @@ public class LoginPage extends JFrame implements ActionListener, MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
 
+    }
+
+    public void displayGUI() throws RemoteException {
+        frame.setVisible(true);
     }
 }

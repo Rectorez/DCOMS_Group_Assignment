@@ -4,10 +4,23 @@ import Client.UI.*;
 
 import javax.swing.*;
 
-public class Main {
-    public static void main(String[] args) {
+import Server.GUIInterface;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
-        LoginPage lp = new LoginPage();
+public class Main {
+    public static void main(String[] args) throws RemoteException, NotBoundException {
+        try {
+            Registry registry = LocateRegistry.getRegistry();
+            GUIInterface loginPage = (GUIInterface) registry.lookup("LoginPage");
+            loginPage.displayGUI();
+        } catch(Exception e) {
+            System.out.println("Server error!");
+            e.printStackTrace();
+        }
+        //LoginPage lp = new LoginPage();
         //MenuPage m = new MenuPage();
         //RegisterPage r = new RegisterPage();
         //InventoryPage i = new InventoryPage();

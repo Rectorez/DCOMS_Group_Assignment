@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.nio.file.Path;
+import java.rmi.RemoteException;
 
 public class MenuPage extends JFrame implements MouseListener, ComponentListener {
     JPanel rootPanel, bigTilePanel, topTilePanel, lowTilePanel;
@@ -21,7 +22,11 @@ public class MenuPage extends JFrame implements MouseListener, ComponentListener
         addWindowListener(new WindowAdapter(){
             @Override
             public void windowClosing(WindowEvent e) {
-                new LoginPage();
+                try {
+                    new LoginPage().displayGUI();
+                } catch (RemoteException remoteException) {
+                    remoteException.printStackTrace();
+                }
             }
         });
 
@@ -132,7 +137,11 @@ public class MenuPage extends JFrame implements MouseListener, ComponentListener
             dispose();
         }
         else if(e.getSource() == logout){
-            new LoginPage();
+            try {
+                new LoginPage().displayGUI();
+            } catch (RemoteException remoteException) {
+                remoteException.printStackTrace();
+            }
             dispose();
         }
     }

@@ -7,6 +7,8 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
+
 import Client.UI.DesignUI.*;
 
 public class RegisterPage extends JFrame implements ActionListener {
@@ -107,11 +109,19 @@ public class RegisterPage extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == discardBtn){
-            new LoginPage();
+            try {
+                new LoginPage().displayGUI();
+            } catch (RemoteException remoteException) {
+                remoteException.printStackTrace();
+            }
             dispose();
         }
         else if (e.getSource() == regBtn) {
-            new LoginPage();
+            try {
+                new LoginPage().displayGUI();
+            } catch (RemoteException remoteException) {
+                remoteException.printStackTrace();
+            }
             dispose();
         }
     }
