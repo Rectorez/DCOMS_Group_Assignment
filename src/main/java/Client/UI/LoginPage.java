@@ -15,7 +15,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Locale;
+
+import static Client.Main.accountInterface;
 
 public class LoginPage extends UnicastRemoteObject implements ActionListener, MouseListener, GUIInterface {
 
@@ -144,13 +145,18 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == loginButton){
-            if(usernameTF.getText().equals("F".toLowerCase())){
-                incorrectLabel.setVisible(true);
-                return;
+            try {
+                if(accountInterface.Login(usernameTF.getText(), passwordTF.getText())){
+                    incorrectLabel.setVisible(false);
+                    new MenuPage();
+                    frame.dispose();
+                }
+                else{
+                    incorrectLabel.setVisible(true);
+                }
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
             }
-            incorrectLabel.setVisible(false);
-            new MenuPage();
-            frame.dispose();
         }
     }
 

@@ -1,28 +1,32 @@
 package Client.UI;
 
 import javax.swing.*;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 
+import AccountPackage.Account;
+import AccountPackage.AdminAccount;
+import AccountPackage.ExecutiveAccount;
 import Client.UI.DesignUI.*;
+
+import static Client.Main.accountInterface;
 
 public class RegisterPage extends JFrame implements ActionListener {
 
-    JPanel rootPanel, fieldPanel, buttonPanel;
+    JPanel rootPanel, emailPanel, fieldPanel, buttonPanel;
     JLabel title;
-    JLabel fNameLabel, lNameLabel, usernameLabel, ICLabel, passLabel, confirmPassLabel;
-    JTextField fNameTF, lNameTF, usernameTF, ICTF;
+    JLabel fNameLabel, lNameLabel, usernameLabel, ICLabel, passLabel, confirmPassLabel, emailLabel;
+    JTextField fNameTF, lNameTF, usernameTF, ICTF, emailTF;
     JPasswordField passTF, confirmPassTF;
     RegisterBtn regBtn;
     DiscardBtn discardBtn;
+    JComboBox roleBox;
 
     public RegisterPage(){
-        setSize(843, 520);
+        setSize(843, 620);
         setTitle("Register Page");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -47,6 +51,9 @@ public class RegisterPage extends JFrame implements ActionListener {
         confirmPassLabel = new JLabel("Confirm Password");
         confirmPassLabel.setFont(DesignUI.defaultFontBold);
         confirmPassLabel.setBorder(new EmptyBorder(20,0,5,0));
+        emailLabel = new JLabel("Email");
+        emailLabel.setFont(DesignUI.defaultFontBold);
+        emailLabel.setBorder(new EmptyBorder(20,0,5,0));
 
         fNameTF = new JTextField();
         fNameTF.setFont(DesignUI.defaultFontBold);
@@ -60,12 +67,23 @@ public class RegisterPage extends JFrame implements ActionListener {
         passTF.setFont(DesignUI.defaultFontBold);
         confirmPassTF = new JPasswordField();
         confirmPassTF.setFont(DesignUI.defaultFontBold);
+        emailTF = new JTextField();
+        emailTF.setFont(DesignUI.defaultFontBold);
 
         discardBtn = new DiscardBtn("Discard");
         discardBtn.addActionListener(this);
 
         regBtn = new RegisterBtn("Register");
         regBtn.addActionListener(this);
+
+        roleBox = new JComboBox(new UserRole[]{UserRole.Admin, UserRole.Executive});
+        roleBox.setFont(DesignUI.defaultFont);
+        roleBox.setBorder(new EmptyBorder(10,0,5,0));
+
+        emailPanel = new JPanel(new GridLayout(2, 1, 0 ,5));
+        emailPanel.add(emailLabel);
+        emailPanel.add(emailTF);
+
 
         fieldPanel = new JPanel(new GridLayout(6, 2, 20, 5));
         fieldPanel.add(fNameLabel);
@@ -95,9 +113,13 @@ public class RegisterPage extends JFrame implements ActionListener {
         c.gridy = 0;
         rootPanel.add(title, c);
         c.gridy = 1;
+        rootPanel.add(roleBox, c);
+        c.gridy = 2;
+        rootPanel.add(emailPanel, c);
+        c.gridy = 3;
         c.anchor = GridBagConstraints.CENTER;
         rootPanel.add(fieldPanel, c);
-        c.gridy = 2;
+        c.gridy = 4;
         c.anchor = GridBagConstraints.SOUTH;
         rootPanel.add(buttonPanel, c);
 
@@ -106,6 +128,28 @@ public class RegisterPage extends JFrame implements ActionListener {
 
     }
 
+    private boolean checkEmpty(JComponent tf){
+        if(tf instanceof JTextField) return ((JTextField)tf).getText() == null || ((JTextField)tf).getText().isBlank();
+        if(tf instanceof JPasswordField) return ((JPasswordField)tf).getPassword() == null || ((JPasswordField)tf).getPassword().toString().isBlank();
+        return false;
+    }
+
+    private boolean checkAllEmpty(){
+        for(var x : rootPanel.getComponents()){
+            if(x instanceof JPanel){
+                for(var y : ((JPanel) x).getComponents()){
+                    if(checkEmpty((JComponent) y)) return true;
+                }
+            }
+            else{
+                if(checkEmpty((JComponent) x)) return true;
+            }
+        }
+        //Code above same as below, but dynamic, no need to change if add new components
+//            if(checkEmpty(emailTF) || checkEmpty(fNameTF) || checkEmpty(lNameTF) || checkEmpty(usernameTF) ||
+//                    checkEmpty(ICTF) || checkEmpty(passTF) || checkEmpty(confirmPassTF)) return;
+        return false;
+    }
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == discardBtn){
@@ -117,12 +161,52 @@ public class RegisterPage extends JFrame implements ActionListener {
             dispose();
         }
         else if (e.getSource() == regBtn) {
+
+            if(checkAllEmpty()){
+                JOptionPane.showMessageDialog(this, "Please fill in all the fields.", "Warning", JOptionPane.WARNING_MESSAGE);
+                System.out.println("Incomplete credentials");
+                return;
+            }
             try {
-                new LoginPage().displayGUI();
+                if(accountInterface.checkExist(usernameTF.getText(), new String(passTF.getPassword()))){
+                    //Account exist
+                    String IC = JOptionPane.showInputDialog("Username exist, please enter IC No. for verification");
+                    Account acc = accountInterface.getAccount(usernameTF.getText(), new String(passTF.getPassword()));
+                    if(acc.GetIC().equals(IC)){
+                        //IC Match
+                        System.out.println("IC Matched");
+                        JOptionPane.showMessageDialog(this,
+                                String.format("Account exist\nUsername: %s\nPassword: %s", acc.GetUsername(), acc.GetPassword()));
+                        new LoginPage().displayGUI();
+                        dispose();
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(this, "IC does not match", "Warning", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                }
+                else{
+                    //Account does not exist, create new
+                    System.out.println(accountInterface.checkAccountListSize());
+                    if(roleBox.getSelectedItem() == UserRole.Executive){
+                        System.out.println("Creating new executive");
+                        accountInterface.Register(new ExecutiveAccount(ICTF.getText(), fNameTF.getText(),
+                                lNameTF.getText(), usernameTF.getText(), emailTF.getText(), new String(passTF.getPassword())));
+
+                    } else if (roleBox.getSelectedItem() == UserRole.Admin) {
+                        System.out.println("Creating new admin");
+                        accountInterface.Register(new AdminAccount(ICTF.getText(), fNameTF.getText(),
+                                lNameTF.getText(), usernameTF.getText(), emailTF.getText(), new String(passTF.getPassword())));
+                    }
+                    System.out.println("Account created. Username: " + usernameTF.getText());
+                    accountInterface.getAllAccounts().forEach(System.out::println);
+                    System.out.println("Account count: " + accountInterface.checkAccountListSize());
+                    new LoginPage().displayGUI();
+                    dispose();
+                }
             } catch (RemoteException remoteException) {
                 remoteException.printStackTrace();
             }
-            dispose();
         }
     }
 }

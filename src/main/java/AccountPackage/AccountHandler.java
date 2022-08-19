@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AccountHandler {
-    private static List<Account> AccountList;
+    private static List<Account> AccountList = new ArrayList<Account>();
+
 
     public static List<Account> GetAccounts() {
         return AccountList;

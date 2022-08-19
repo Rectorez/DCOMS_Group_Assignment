@@ -1,8 +1,9 @@
 package AccountPackage;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public abstract class Account {
+public abstract class Account implements Serializable {
     private String IC;
     private String FirstName;
     private String LastName;
@@ -73,5 +74,9 @@ public abstract class Account {
     }
     public boolean Login(String email, String password) {
         return AccountHandler.VerifyAccountWithEmail(email, password);
+    }
+
+    public String toString(){
+        return String.format("%s %s | %s | %s | %s", FirstName, LastName, Username, Email, Password);
     }
 }
