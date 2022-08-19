@@ -11,8 +11,8 @@ public class RMIRegistry {
     public static void main(String[] args) throws RemoteException {
         try {
             Registry reg = LocateRegistry.createRegistry(1099);
-            reg.rebind("accountServer",new AccountServer());
-            reg.rebind("inventoryServer", new InventoryServer());
+            reg.rebind("AccountServer", new AccountServer());
+            reg.rebind("InventoryServer", new InventoryServer());
 
             AccountHandler.AddAccount(new ExecutiveAccount("ic", "fName", "lName", "username", "email", "pass"));
             System.out.println("Server is ready!");

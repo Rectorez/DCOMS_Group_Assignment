@@ -16,7 +16,7 @@ import java.awt.event.MouseListener;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-import static Client.Main.accountInterface;
+import static Client.Main.*;
 
 public class LoginPage extends UnicastRemoteObject implements ActionListener, MouseListener, GUIInterface {
 
@@ -146,7 +146,7 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == loginButton){
             try {
-                if(accountInterface.Login(usernameTF.getText(), passwordTF.getText())){
+                if (AccountInterface.Login(usernameTF.getText(), passwordTF.getText())){
                     incorrectLabel.setVisible(false);
                     new MenuPage();
                     frame.dispose();

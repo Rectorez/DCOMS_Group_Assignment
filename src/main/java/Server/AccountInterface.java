@@ -1,20 +1,28 @@
 package Server;
 
 import AccountPackage.Account;
+import AccountPackage.AdminAccount;
+import AccountPackage.ExecutiveAccount;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
 public interface AccountInterface extends Remote {
-    boolean Login(String username, String pass) throws RemoteException;
-    void Register(Account a) throws RemoteException;
+    //Getters
+    List<Account> GetAccounts() throws RemoteException;
+    List<AdminAccount> GetAdminAccounts() throws RemoteException;
+    List<ExecutiveAccount> GetExecutiveAccounts() throws RemoteException;
+    Account GetAccount(String username, String password) throws RemoteException;
 
-    boolean checkExist(String username, String pass) throws RemoteException;
+    //Verification
+    boolean HasExistingAccountPartial(String username) throws RemoteException;
+    boolean HasExistingAccountFull(String username, String password) throws RemoteException;
+    boolean VerifyAccountWithEmailPassword(String email, String password) throws RemoteException;
+    boolean VerifyAccountWithUsernamePassword(String username, String password) throws RemoteException;
 
-    public int checkAccountListSize() throws RemoteException;
+    //Login / Register
+    boolean Login(String username, String password) throws RemoteException;
+    void Register(Account account) throws RemoteException;
 
-    public List<Account> getAllAccounts() throws RemoteException;
-
-    public Account getAccount(String user, String pass) throws RemoteException;
 }
