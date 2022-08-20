@@ -1,5 +1,6 @@
 package Client.UI;
 
+import AccountPackage.AccountType;
 import Client.UI.Compound.PanelRound;
 import Client.UI.Compound.PanelRoundBorder;
 import Server.GUIInterface;
@@ -16,7 +17,8 @@ import java.awt.event.MouseListener;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-import static Client.Main.accountInterface;
+import static Client.Main.AccountInterface;
+import static Client.Main.currentAccount;
 
 public class LoginPage extends UnicastRemoteObject implements ActionListener, MouseListener, GUIInterface {
 
@@ -170,13 +172,13 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == loginButton){
             try {
-                //TODO change accountInterface method to admin
-                if(adminRadioButton.isSelected() && accountInterface.Login(usernameTF.getText(), passwordTF.getText())){
+                //TODO after login setCurrentAccount
+                if(adminRadioButton.isSelected() && AccountInterface.Login(AccountType.ADMIN, usernameTF.getText(), passwordTF.getText())){
                     incorrectLabel.setVisible(false);
                     new MenuPage();
                     frame.dispose();
                 }
-                else if(executiveRadioButton.isSelected() && accountInterface.Login(usernameTF.getText(), passwordTF.getText())){
+                else if(executiveRadioButton.isSelected() && AccountInterface.Login(AccountType.EXECUTIVE, usernameTF.getText(), passwordTF.getText())){
                     incorrectLabel.setVisible(false);
                     new MenuPage();
                     frame.dispose();
