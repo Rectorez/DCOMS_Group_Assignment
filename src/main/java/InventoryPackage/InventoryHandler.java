@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class InventoryHandler {
-    private static List<Inventory> InventoryList;
+    private static List<Inventory> InventoryList = new ArrayList<>();
 
     public static List<Inventory> GetInventories() {
         return InventoryList;
@@ -81,5 +81,22 @@ public class InventoryHandler {
                 .findFirst()
                 .orElse(new Inventory("N/A", "N/A"))
                 .DeleteItem(item);
+    }
+
+    public static boolean ImportItem(Item targetItem, int amount) {
+        if (InventoryList.stream().noneMatch(l -> l.GetItemList().contains(targetItem))) return false;
+        return InventoryList.stream()
+                .filter(l -> l.GetItemList().contains(targetItem))
+                .findFirst()
+                .orElse(new Inventory("N/A", "N/A"))
+                .ImportItem(targetItem, amount);
+    }
+    public static boolean ExportItem(Item targetItem, int amount) {
+        if (InventoryList.stream().noneMatch(l -> l.GetItemList().contains(targetItem))) return false;
+        return InventoryList.stream()
+                .filter(l -> l.GetItemList().contains(targetItem))
+                .findFirst()
+                .orElse(new Inventory("N/A", "N/A"))
+                .ExportItem(targetItem, amount);
     }
 }

@@ -1,6 +1,8 @@
 package Server;
 
 import AccountPackage.AccountHandler;
+import AccountPackage.AccountType;
+import AccountPackage.AdminAccount;
 import AccountPackage.ExecutiveAccount;
 
 import java.rmi.RemoteException;
@@ -11,10 +13,11 @@ public class RMIRegistry {
     public static void main(String[] args) throws RemoteException {
         try {
             Registry reg = LocateRegistry.createRegistry(1099);
-            reg.rebind("accountServer",new AccountServer());
-            reg.rebind("inventoryServer", new InventoryServer());
+            reg.rebind("AccountServer", new AccountServer());
+            reg.rebind("InventoryServer", new InventoryServer());
 
-            AccountHandler.AddAccount(new ExecutiveAccount("ic", "fName", "lName", "username", "email", "pass"));
+            AccountHandler.AddAccount(AccountType.EXECUTIVE, new ExecutiveAccount("eic", "efn", "eln", "eun", "ee", "ep"));
+            AccountHandler.AddAccount(AccountType.ADMIN, new AdminAccount("aic", "afn", "aln", "aun", "ae", "ap"));
             System.out.println("Server is ready!");
         } catch(RemoteException e) {
             System.out.println("Server error!");

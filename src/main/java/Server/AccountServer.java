@@ -1,47 +1,67 @@
 package Server;
 
-import AccountPackage.Account;
-import AccountPackage.AccountHandler;
+import AccountPackage.*;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
 public class AccountServer extends UnicastRemoteObject implements AccountInterface {
-
     public AccountServer() throws RemoteException{
         super();
     }
 
+    //Getters
     @Override
-    public boolean Login(String username, String pass) throws RemoteException {
-        return AccountHandler.VerifyAccountWithUsername(username, pass);
-    }
-
-    @Override
-    public void Register(Account a) throws RemoteException {
-        AccountHandler.AddAccount(a);
-    }
-
-    @Override
-    public boolean checkExist(String username, String pass) throws RemoteException{
-        return AccountHandler.VerifyAccountWithUsername(username, pass);
-    }
-
-    @Override
-    public int checkAccountListSize() throws RemoteException {
-        return AccountHandler.GetAccounts().size();
-    }
-
-    @Override
-    public List<Account> getAllAccounts() throws RemoteException{
+    public List<Account> GetAccounts() {
         return AccountHandler.GetAccounts();
     }
-
     @Override
-    public Account getAccount(String user, String pass) throws RemoteException {
-        return AccountHandler.GetAccounts().stream().filter(x -> (x.GetUsername().equals(user) &&
-                (x.GetPassword().equals(pass)))).findFirst().get();
+    public List<AdminAccount> GetAdminAccounts() {
+        return AccountHandler.GetAdminAccounts();
+    }
+    @Override
+    public List<ExecutiveAccount> GetExecutiveAccounts() {
+        return AccountHandler.GetExecutiveAccounts();
+    }
+    @Override
+    public List<Account> GetAccountsOfType(AccountType accountType) {
+        return AccountHandler.GetAccountsOfType(accountType);
+    }
+    @Override
+    public Account GetAccount(String username, String password) {
+        return AccountHandler
+                .GetAccounts()
+                .stream()
+                .filter(x -> (x.GetUsername().equals(username) &&
+                        (x.GetPassword().equals(password))))
+                .findFirst()
+                .orElse(null);
     }
 
+    //Verification
+    @Override
+    public boolean HasExistingAccountPartial(AccountType accountType, String username) {
+        return AccountHandler.HasExistingAccountPartial(accountType, username);
+    }
+    @Override
+    public boolean HasExistingAccountFull(AccountType accountType, String username, String password) {
+        return AccountHandler.HasExistingAccountFull(accountType, username, password);
+    }
+    public boolean VerifyAccountWithEmailPassword(AccountType accountType, String email, String password) {
+        return AccountHandler.VerifyAccountWithEmailPassword(accountType, email, password);
+    }
+    public boolean VerifyAccountWithUsernamePassword(AccountType accountType, String username, String password) {
+        return AccountHandler.VerifyAccountWithUsernamePassword(accountType, username, password);
+    }
+
+    //Login / Register
+    @Override
+    public boolean Login(AccountType accountType, String username, String password) {
+        return AccountHandler.VerifyAccountWithUsernamePassword(accountType, username, password);
+    }
+    @Override
+    public void Register(AccountType accountType, Account account) {
+        AccountHandler.AddAccount(accountType, account);
+    }
 }

@@ -4,10 +4,10 @@ public class Item {
     private String ID;
     private String InventoryID;
     private String Name;
-    private Double Price;
-    private Double Cost;
-    private Integer StoredQuantity;
-    private Integer SoldQuantity;
+    private double Price;
+    private double Cost;
+    private int StoredQuantity;
+    private int SoldQuantity;
 
     private String GenerateID() {
         int value = InventoryHandler.GetInventories()
@@ -22,7 +22,7 @@ public class Item {
         ID.append(value);
         return ID.toString();
     }
-    public Item(String inventoryID, String name, Double price, Double cost) {
+    public Item(String inventoryID, String name, double price, double cost) {
         ID = GenerateID();
         InventoryID = inventoryID;
         Name = name;
@@ -31,7 +31,7 @@ public class Item {
         StoredQuantity = 0;
         SoldQuantity = 0;
     }
-    public Item(String ID, String inventoryID, String name, Double price, Double cost, Integer storedQuantity, Integer soldQuantity) {
+    public Item(String ID, String inventoryID, String name, double price, double cost, int storedQuantity, int soldQuantity) {
         this.ID = ID;
         InventoryID = inventoryID;
         Name = name;
@@ -50,16 +50,27 @@ public class Item {
     public String GetName() {
         return Name;
     }
-    public Double GetPrice() {
+    public double GetPrice() {
         return Price;
     }
-    public Double GetCost() {
+    public double GetCost() {
         return Cost;
     }
-    public Integer GetStoredQuantity() {
+    public int GetStoredQuantity() {
         return StoredQuantity;
     }
-    public Integer GetSoldQuantity() {
+    public int GetSoldQuantity() {
         return SoldQuantity;
+    }
+
+    public boolean Import(int amount) {
+        if (amount < 0) return false;
+        StoredQuantity += amount;
+        return true;
+    }
+    public boolean Export(int amount) {
+        if (amount < 0 || amount > StoredQuantity - SoldQuantity) return false;
+        SoldQuantity += amount;
+        return true;
     }
 }

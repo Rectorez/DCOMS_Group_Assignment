@@ -6,13 +6,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
+import java.util.Arrays;
 
 import AccountPackage.Account;
+import AccountPackage.AccountType;
 import AccountPackage.AdminAccount;
 import AccountPackage.ExecutiveAccount;
 import Client.UI.DesignUI.*;
 
-import static Client.Main.accountInterface;
+import static Client.Main.*;
 
 public class RegisterPage extends JFrame implements ActionListener {
 
@@ -23,7 +25,7 @@ public class RegisterPage extends JFrame implements ActionListener {
     JPasswordField passTF, confirmPassTF;
     RegisterBtn regBtn;
     DiscardBtn discardBtn;
-    JComboBox roleBox;
+    JComboBox<String> roleBox;
 
     public RegisterPage(){
         setSize(843, 620);
@@ -76,9 +78,11 @@ public class RegisterPage extends JFrame implements ActionListener {
         regBtn = new RegisterBtn("Register");
         regBtn.addActionListener(this);
 
-        roleBox = new JComboBox(new UserRole[]{UserRole.Admin, UserRole.Executive});
+        roleBox = new JComboBox<>();
         roleBox.setFont(DesignUI.defaultFont);
         roleBox.setBorder(new EmptyBorder(10,0,5,0));
+        for (AccountType accountType : Arrays.stream(AccountType.values()).filter(a -> !a.equals(AccountType.ALL)).toList())
+            roleBox.addItem(accountType.toString());
 
         emailPanel = new JPanel(new GridLayout(2, 1, 0 ,5));
         emailPanel.add(emailLabel);
@@ -129,8 +133,8 @@ public class RegisterPage extends JFrame implements ActionListener {
     }
 
     private boolean checkEmpty(JComponent tf){
+        if(tf instanceof JPasswordField) return ((JPasswordField)tf).getPassword() == null || new String(((JPasswordField)tf).getPassword()).isBlank();
         if(tf instanceof JTextField) return ((JTextField)tf).getText() == null || ((JTextField)tf).getText().isBlank();
-        if(tf instanceof JPasswordField) return ((JPasswordField)tf).getPassword() == null || ((JPasswordField)tf).getPassword().toString().isBlank();
         return false;
     }
 
@@ -168,10 +172,12 @@ public class RegisterPage extends JFrame implements ActionListener {
                 return;
             }
             try {
-                if(accountInterface.checkExist(usernameTF.getText(), new String(passTF.getPassword()))){
+                AccountType selectedAccountType = AccountType.valueOf(roleBox.getSelectedItem() == null ?
+                        AccountType.ALL.toString() : roleBox.getSelectedItem().toString());
+                if(AccountInterface.HasExistingAccountPartial(selectedAccountType, usernameTF.getText())){
                     //Account exist
                     String IC = JOptionPane.showInputDialog("Username exist, please enter IC No. for verification");
-                    Account acc = accountInterface.getAccount(usernameTF.getText(), new String(passTF.getPassword()));
+                    Account acc = AccountInterface.GetAccount(usernameTF.getText(), new String(passTF.getPassword()));
                     if(acc.GetIC().equals(IC)){
                         //IC Match
                         System.out.println("IC Matched");
@@ -187,20 +193,20 @@ public class RegisterPage extends JFrame implements ActionListener {
                 }
                 else{
                     //Account does not exist, create new
-                    System.out.println(accountInterface.checkAccountListSize());
-                    if(roleBox.getSelectedItem() == UserRole.Executive){
+                    System.out.println(AccountInterface.GetAccounts().size());
+                    if(roleBox.getSelectedItem().equals(AccountType.EXECUTIVE.toString())){
                         System.out.println("Creating new executive");
-                        accountInterface.Register(new ExecutiveAccount(ICTF.getText(), fNameTF.getText(),
+                        AccountInterface.Register(AccountType.EXECUTIVE, new ExecutiveAccount(ICTF.getText(), fNameTF.getText(),
                                 lNameTF.getText(), usernameTF.getText(), emailTF.getText(), new String(passTF.getPassword())));
 
-                    } else if (roleBox.getSelectedItem() == UserRole.Admin) {
+                    } else if (roleBox.getSelectedItem().equals(AccountType.ADMIN.toString())) {
                         System.out.println("Creating new admin");
-                        accountInterface.Register(new AdminAccount(ICTF.getText(), fNameTF.getText(),
+                        AccountInterface.Register(AccountType.ADMIN, new AdminAccount(ICTF.getText(), fNameTF.getText(),
                                 lNameTF.getText(), usernameTF.getText(), emailTF.getText(), new String(passTF.getPassword())));
                     }
                     System.out.println("Account created. Username: " + usernameTF.getText());
-                    accountInterface.getAllAccounts().forEach(System.out::println);
-                    System.out.println("Account count: " + accountInterface.checkAccountListSize());
+                    AccountInterface.GetAccounts().forEach(System.out::println);
+                    System.out.println("Account count: " + AccountInterface.GetAccounts().size());
                     new LoginPage().displayGUI();
                     dispose();
                 }

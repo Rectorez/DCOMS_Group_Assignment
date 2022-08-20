@@ -1,6 +1,5 @@
 package Client;
 
-import AccountPackage.Account;
 import Client.UI.*;
 
 import Server.AccountInterface;
@@ -14,14 +13,14 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class Main {
-    public static AccountInterface accountInterface;
-    public static InventoryInterface inventoryInterface;
-    public static Account currentAccount;
+    public static AccountInterface AccountInterface;
+    public static InventoryInterface InventoryInterface;
     public static void main(String[] args) throws RemoteException, NotBoundException, MalformedURLException {
         try {
             Registry registry = LocateRegistry.getRegistry(1099);
-            accountInterface = (AccountInterface) registry.lookup("accountServer");
-            inventoryInterface = (InventoryInterface) registry.lookup("inventoryServer");
+            AccountInterface = (AccountInterface) registry.lookup("AccountServer");
+            InventoryInterface = (InventoryInterface) registry.lookup("InventoryServer");
+
             //GUIInterface loginPage = (GUIInterface) registry.lookup("LoginPage");
             LoginPage loginPage = new LoginPage();
             loginPage.displayGUI();

@@ -66,16 +66,6 @@ public abstract class Account implements Serializable {
         return DeleteDate;
     }
 
-    public boolean ConnectToServer() {
-        return true;
-    }
-    public boolean Disconnect() {
-        return true;
-    }
-    public boolean Login(String email, String password) {
-        return AccountHandler.VerifyAccountWithEmail(email, password);
-    }
-
     public String toString(){
         return String.format("%s %s | %s | %s | %s", FirstName, LastName, Username, Email, Password);
     }
