@@ -21,7 +21,7 @@ import static Client.Main.accountInterface;
 public class LoginPage extends UnicastRemoteObject implements ActionListener, MouseListener, GUIInterface {
 
     JFrame frame = new JFrame();
-    JPanel rootPanel, leftPanel, rightPanel;
+    JPanel rootPanel, leftPanel, rightPanel, radioPanel;
     JLabel logo;
     PanelRoundBorder loginCard;
     PanelRound loginCardContent;
@@ -29,7 +29,9 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
     JLabel loginLabel, usernameLabel, passwordLabel;
     JTextField usernameTF, passwordTF;
     JButton loginButton;
-    JLabel incorrectLabel, registerLabel;
+    JLabel incorrectLabel, registerLabel, radioLabel;
+    JRadioButton adminRadioButton, executiveRadioButton;
+    ButtonGroup roleButtonGroup;
 
     public LoginPage() throws RemoteException {
         frame.setSize(1280, 720);
@@ -62,6 +64,26 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
         passwordTF = new JTextField();
         passwordTF.setFont(DesignUI.defaultFont);
         passwordTF.setBorder(b);
+
+        radioLabel = new JLabel("Login as: ");
+        radioLabel.setFont(DesignUI.defaultFont);
+        radioLabel.setBorder(new EmptyBorder(10,0,10,0));
+        adminRadioButton = new JRadioButton("Admin");
+        adminRadioButton.setFont(DesignUI.defaultFont);
+        adminRadioButton.setBorder(new EmptyBorder(10,0,10,0));
+        adminRadioButton.setSelected(true);
+        executiveRadioButton = new JRadioButton("Executive");
+        executiveRadioButton.setFont(DesignUI.defaultFont);
+        executiveRadioButton.setBorder(new EmptyBorder(10,0,10,0));
+
+        roleButtonGroup = new ButtonGroup();
+        roleButtonGroup.add(adminRadioButton);
+        roleButtonGroup.add(executiveRadioButton);
+
+        radioPanel = new JPanel(new GridLayout(1,3,10, 5));
+        radioPanel.add(radioLabel);
+        radioPanel.add(adminRadioButton);
+        radioPanel.add(executiveRadioButton);
 
         incorrectLabel = new JLabel("Incorrect username or password");
         incorrectLabel.setFont(DesignUI.tooltipFont);
@@ -97,10 +119,12 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
         loginCardContent.add(loginLabel, c);
 
         c.gridy = 3;
-        loginCardContent.add(incorrectLabel, c);
+        loginCardContent.add(radioPanel, c);
         c.gridy = 4;
-        loginCardContent.add(loginButton, c);
+        loginCardContent.add(incorrectLabel, c);
         c.gridy = 5;
+        loginCardContent.add(loginButton, c);
+        c.gridy = 6;
         loginCardContent.add(registerLabel, c);
 
         c.gridy = 1;
@@ -146,7 +170,13 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == loginButton){
             try {
-                if(accountInterface.Login(usernameTF.getText(), passwordTF.getText())){
+                //TODO change accountInterface method to admin
+                if(adminRadioButton.isSelected() && accountInterface.Login(usernameTF.getText(), passwordTF.getText())){
+                    incorrectLabel.setVisible(false);
+                    new MenuPage();
+                    frame.dispose();
+                }
+                else if(executiveRadioButton.isSelected() && accountInterface.Login(usernameTF.getText(), passwordTF.getText())){
                     incorrectLabel.setVisible(false);
                     new MenuPage();
                     frame.dispose();

@@ -1,5 +1,6 @@
 package Client;
 
+import AccountPackage.Account;
 import Client.UI.*;
 
 import Server.AccountInterface;
@@ -15,6 +16,7 @@ import java.rmi.registry.Registry;
 public class Main {
     public static AccountInterface accountInterface;
     public static InventoryInterface inventoryInterface;
+    public static Account currentAccount;
     public static void main(String[] args) throws RemoteException, NotBoundException, MalformedURLException {
         try {
             Registry registry = LocateRegistry.getRegistry(1099);
