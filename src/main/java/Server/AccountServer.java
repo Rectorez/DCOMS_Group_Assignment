@@ -29,14 +29,8 @@ public class AccountServer extends UnicastRemoteObject implements AccountInterfa
         return AccountHandler.GetAccountsOfType(accountType);
     }
     @Override
-    public Account GetAccount(String username, String password) {
-        return AccountHandler
-                .GetAccounts()
-                .stream()
-                .filter(x -> (x.GetUsername().equals(username) &&
-                        (x.GetPassword().equals(password))))
-                .findFirst()
-                .orElse(null);
+    public Account GetAccount(AccountType accountType, String username, String password) {
+        return AccountHandler.GetAccount(accountType, username, password);
     }
 
     //Verification

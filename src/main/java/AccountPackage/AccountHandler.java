@@ -28,6 +28,14 @@ public class AccountHandler {
             case ALL: default: return GetAccounts();
         }
     }
+    public static Account GetAccount(AccountType accountType, String username, String password) {
+        return GetAccountsOfType(accountType)
+                .stream()
+                .filter(x -> (x.GetUsername().equals(username) &&
+                        (x.GetPassword().equals(password))))
+                .findFirst()
+                .orElse(null);
+    }
 
     public static boolean HasExistingAccountPartial(AccountType accountType, String username) {
         return AccountHandler.GetAccountsOfType(accountType)

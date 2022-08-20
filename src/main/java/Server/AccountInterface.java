@@ -13,7 +13,7 @@ public interface AccountInterface extends Remote {
     List<ExecutiveAccount> GetExecutiveAccounts() throws RemoteException;
     List<Account> GetAccountsOfType(AccountType accountType) throws RemoteException;
 
-    Account GetAccount(String username, String password) throws RemoteException;
+    Account GetAccount(AccountType accountType, String username, String password) throws RemoteException;
 
     //Verification
     boolean HasExistingAccountPartial(AccountType accountType, String username) throws RemoteException;

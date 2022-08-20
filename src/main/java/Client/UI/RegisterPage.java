@@ -177,7 +177,7 @@ public class RegisterPage extends JFrame implements ActionListener {
                 if(AccountInterface.HasExistingAccountPartial(selectedAccountType, usernameTF.getText())){
                     //Account exist
                     String IC = JOptionPane.showInputDialog("Username exist, please enter IC No. for verification");
-                    Account acc = AccountInterface.GetAccount(usernameTF.getText(), new String(passTF.getPassword()));
+                    Account acc = AccountInterface.GetAccount(selectedAccountType, usernameTF.getText(), new String(passTF.getPassword()));
                     if(acc.GetIC().equals(IC)){
                         //IC Match
                         System.out.println("IC Matched");
