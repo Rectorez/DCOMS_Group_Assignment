@@ -6,6 +6,7 @@ import Client.UI.DesignUI.DeleteBtn;
 import Client.UI.DesignUI.DiscardBtn;
 import Client.UI.Utility.MyListCellRenderer;
 import InventoryPackage.Inventory;
+import InventoryPackage.InventoryHandler;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -20,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
+import java.time.format.DateTimeFormatter;
 
 import static Client.Main.*;
 
@@ -57,7 +59,7 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
         try {
             DefaultListModel<String> listModel = (DefaultListModel<String>)list.getModel();
             for (Inventory inventory : InventoryInterface.GetInventories())
-                listModel.addElement(inventory.GetName());
+                listModel.addElement(inventory.GetID() + ": " + inventory.GetName());
             if (listModel.size() > 0) list.setSelectedIndex(0);
         }
         catch (RemoteException ex) {
@@ -225,6 +227,27 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
-
+        try {
+            String inventoryID = list.getSelectedValue().split(":")[0];
+            Inventory selectedInventory = InventoryInterface.GetInventories().stream()
+                    .filter(i -> i.GetID().equals(inventoryID))
+                    .findFirst()
+                    .orElse(null);
+            if (selectedInventory == null) {
+                JOptionPane.showMessageDialog(this, "No Inventory Found With ID: " + inventoryID);
+            }
+            else {
+                idTF.setText(selectedInventory.GetID());
+                nameTF.setText(selectedInventory.GetName());
+                descTA.setText(selectedInventory.GetDescription());
+                countValLabel.setText(String.valueOf(selectedInventory.GetItemList().size()));
+                createdValLabel.setText(selectedInventory.GetCreateDate().format(DateTimeFormatter.ofPattern("hh:mm:ss a, EEEE, d MMMM yyyy")));
+                delValLabel.setText(selectedInventory.GetDeleteDate().format(DateTimeFormatter.ofPattern("hh:mm:ss a, EEEE, d MMMM yyyy")));
+                statusValLabel.setText(selectedInventory.GetStatus());
+            }
+        }
+        catch (RemoteException ex) {
+            System.out.println("REMOTE EXCEPTION");
+        }
     }
 }
