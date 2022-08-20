@@ -1,5 +1,6 @@
 package Client.UI;
 
+import AccountPackage.AdminAccount;
 import Client.UI.Compound.TilePanel;
 
 import javax.swing.*;
@@ -8,6 +9,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.nio.file.Path;
 import java.rmi.RemoteException;
+
+import static Client.Main.currentAccount;
 
 public class MenuPage extends JFrame implements MouseListener, ComponentListener {
     JPanel rootPanel, bigTilePanel, topTilePanel, lowTilePanel;
@@ -29,8 +32,8 @@ public class MenuPage extends JFrame implements MouseListener, ComponentListener
                 }
             }
         });
-
-        userLabel = new JLabel("Hello, user");
+        String username = currentAccount == null ? "user" : currentAccount.GetUsername();;
+        userLabel = new JLabel("Hello, " + username);
         userLabel.setFont(DesignUI.bigFont);
         userLabel.setBorder(new EmptyBorder(5, 5, 10, 5));
 
@@ -128,11 +131,21 @@ public class MenuPage extends JFrame implements MouseListener, ComponentListener
 
         }
         else if(e.getSource() == editItem){
+            if(currentAccount != null && currentAccount.getClass().equals(AdminAccount.class)){
+                JOptionPane.showMessageDialog(this, "This function is not available for admin account",
+                        "Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             new EditItemPage();
             dispose();
 
         }
         else if(e.getSource() == sales){
+            if(currentAccount != null && currentAccount.getClass().equals(AdminAccount.class)){
+                JOptionPane.showMessageDialog(this, "This function is not available for admin account",
+                        "Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             new SalesPage();
             dispose();
         }

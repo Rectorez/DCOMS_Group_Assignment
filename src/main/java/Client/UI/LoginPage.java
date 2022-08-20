@@ -29,7 +29,8 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
     PanelRound loginCardContent;
 
     JLabel loginLabel, usernameLabel, passwordLabel;
-    JTextField usernameTF, passwordTF;
+    JTextField usernameTF;
+    JPasswordField passwordTF;
     JButton loginButton;
     JLabel incorrectLabel, registerLabel, radioLabel;
     JRadioButton adminRadioButton, executiveRadioButton;
@@ -63,7 +64,7 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
         usernameTF = new JTextField();
         usernameTF.setFont(DesignUI.defaultFont);
         usernameTF.setBorder(b);
-        passwordTF = new JTextField();
+        passwordTF = new JPasswordField();
         passwordTF.setFont(DesignUI.defaultFont);
         passwordTF.setBorder(b);
 
@@ -173,12 +174,9 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
         if(e.getSource() == loginButton){
             try {
                 //TODO after login setCurrentAccount
-                if(adminRadioButton.isSelected() && AccountInterface.Login(AccountType.ADMIN, usernameTF.getText(), passwordTF.getText())){
-                    incorrectLabel.setVisible(false);
-                    new MenuPage();
-                    frame.dispose();
-                }
-                else if(executiveRadioButton.isSelected() && AccountInterface.Login(AccountType.EXECUTIVE, usernameTF.getText(), passwordTF.getText())){
+                AccountType selectedAccountType = adminRadioButton.isSelected() ? AccountType.ADMIN : AccountType.EXECUTIVE;
+                if(AccountInterface.Login(selectedAccountType, usernameTF.getText(), new String(passwordTF.getPassword()))){
+                    currentAccount = AccountInterface.GetAccount(selectedAccountType, usernameTF.getText(), new String(passwordTF.getPassword()));
                     incorrectLabel.setVisible(false);
                     new MenuPage();
                     frame.dispose();
