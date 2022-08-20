@@ -6,8 +6,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
+import java.util.Arrays;
 
 import AccountPackage.Account;
+import AccountPackage.AccountType;
 import AccountPackage.AdminAccount;
 import AccountPackage.ExecutiveAccount;
 import Client.UI.DesignUI.*;
@@ -23,7 +25,7 @@ public class RegisterPage extends JFrame implements ActionListener {
     JPasswordField passTF, confirmPassTF;
     RegisterBtn regBtn;
     DiscardBtn discardBtn;
-    JComboBox roleBox;
+    JComboBox<String> roleBox;
 
     public RegisterPage(){
         setSize(843, 620);
@@ -76,9 +78,11 @@ public class RegisterPage extends JFrame implements ActionListener {
         regBtn = new RegisterBtn("Register");
         regBtn.addActionListener(this);
 
-        roleBox = new JComboBox(new UserRole[]{UserRole.Admin, UserRole.Executive});
+        roleBox = new JComboBox<>();
         roleBox.setFont(DesignUI.defaultFont);
         roleBox.setBorder(new EmptyBorder(10,0,5,0));
+        for (AccountType accountType : Arrays.stream(AccountType.values()).filter(a -> !a.equals(AccountType.ALL)).toList())
+            roleBox.addItem(accountType.toString());
 
         emailPanel = new JPanel(new GridLayout(2, 1, 0 ,5));
         emailPanel.add(emailLabel);
@@ -168,7 +172,9 @@ public class RegisterPage extends JFrame implements ActionListener {
                 return;
             }
             try {
-                if(AccountInterface.HasExistingAccountPartial(usernameTF.getText())){
+                AccountType selectedAccountType = AccountType.valueOf(roleBox.getSelectedItem() == null ?
+                        AccountType.ALL.toString() : roleBox.getSelectedItem().toString());
+                if(AccountInterface.HasExistingAccountPartial(selectedAccountType, usernameTF.getText())){
                     //Account exist
                     String IC = JOptionPane.showInputDialog("Username exist, please enter IC No. for verification");
                     Account acc = AccountInterface.GetAccount(usernameTF.getText(), new String(passTF.getPassword()));
@@ -188,14 +194,14 @@ public class RegisterPage extends JFrame implements ActionListener {
                 else{
                     //Account does not exist, create new
                     System.out.println(AccountInterface.GetAccounts().size());
-                    if(roleBox.getSelectedItem() == UserRole.Executive){
+                    if(roleBox.getSelectedItem().equals(AccountType.EXECUTIVE.toString())){
                         System.out.println("Creating new executive");
-                        AccountInterface.Register(new ExecutiveAccount(ICTF.getText(), fNameTF.getText(),
+                        AccountInterface.Register(AccountType.EXECUTIVE, new ExecutiveAccount(ICTF.getText(), fNameTF.getText(),
                                 lNameTF.getText(), usernameTF.getText(), emailTF.getText(), new String(passTF.getPassword())));
 
-                    } else if (roleBox.getSelectedItem() == UserRole.Admin) {
+                    } else if (roleBox.getSelectedItem().equals(AccountType.ADMIN.toString())) {
                         System.out.println("Creating new admin");
-                        AccountInterface.Register(new AdminAccount(ICTF.getText(), fNameTF.getText(),
+                        AccountInterface.Register(AccountType.ADMIN, new AdminAccount(ICTF.getText(), fNameTF.getText(),
                                 lNameTF.getText(), usernameTF.getText(), emailTF.getText(), new String(passTF.getPassword())));
                     }
                     System.out.println("Account created. Username: " + usernameTF.getText());

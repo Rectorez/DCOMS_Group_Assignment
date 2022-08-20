@@ -20,4 +20,8 @@ public interface InventoryInterface extends Remote {
     boolean AddItem(Item newItem) throws RemoteException;
     boolean UpdateItem(Item oldItem, Item newItem) throws RemoteException;
     boolean DeleteItem(Item item) throws RemoteException;
+
+    //Import / Export
+    boolean ImportItem(Item targetItem, int amount) throws RemoteException;
+    boolean ExportItem(Item targetItem, int amount) throws RemoteException;
 }

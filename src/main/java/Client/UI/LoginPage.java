@@ -1,7 +1,9 @@
 package Client.UI;
 
+import AccountPackage.AccountType;
 import Client.UI.Compound.PanelRound;
 import Client.UI.Compound.PanelRoundBorder;
+import Server.AccountInterface;
 import Server.GUIInterface;
 
 import javax.swing.*;
@@ -15,6 +17,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
 
 import static Client.Main.*;
 
@@ -26,10 +29,12 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
     PanelRoundBorder loginCard;
     PanelRound loginCardContent;
 
-    JLabel loginLabel, usernameLabel, passwordLabel;
-    JTextField usernameTF, passwordTF;
+    JLabel loginLabel, accountTypeLabel, usernameLabel, passwordLabel;
+    JTextField usernameTF;
+    JPasswordField passwordTF;
     JButton loginButton;
     JLabel incorrectLabel, registerLabel;
+    JComboBox<String> accountTypeBox;
 
     public LoginPage() throws RemoteException {
         frame.setSize(1280, 720);
@@ -47,6 +52,9 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
         loginLabel.setBorder(new EmptyBorder(10,0,10,0));
         loginLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
+        accountTypeLabel = new JLabel("Account Type:");
+        accountTypeLabel.setFont(DesignUI.defaultFontBold);
+        accountTypeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         usernameLabel = new JLabel("Username:");
         usernameLabel.setFont(DesignUI.defaultFontBold);
         usernameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -59,9 +67,14 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
         usernameTF = new JTextField();
         usernameTF.setFont(DesignUI.defaultFont);
         usernameTF.setBorder(b);
-        passwordTF = new JTextField();
+        passwordTF = new JPasswordField();
         passwordTF.setFont(DesignUI.defaultFont);
         passwordTF.setBorder(b);
+
+        accountTypeBox = new JComboBox<>();
+        accountTypeBox.setFont(DesignUI.defaultFont);
+        for (AccountType accountType : Arrays.stream(AccountType.values()).filter(t -> !t.equals(AccountType.ALL)).toList())
+            accountTypeBox.addItem(accountType.toString());
 
         incorrectLabel = new JLabel("Incorrect username or password");
         incorrectLabel.setFont(DesignUI.tooltipFont);
@@ -96,25 +109,29 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
 
         loginCardContent.add(loginLabel, c);
 
-        c.gridy = 3;
-        loginCardContent.add(incorrectLabel, c);
         c.gridy = 4;
-        loginCardContent.add(loginButton, c);
+        loginCardContent.add(incorrectLabel, c);
         c.gridy = 5;
+        loginCardContent.add(loginButton, c);
+        c.gridy = 6;
         loginCardContent.add(registerLabel, c);
 
-        c.gridy = 1;
         c.weightx = 0.45;
         c.gridwidth = 1;
-        loginCardContent.add(usernameLabel, c);
+        c.gridy = 1;
+        loginCardContent.add(accountTypeLabel, c);
         c.gridy = 2;
+        loginCardContent.add(usernameLabel, c);
+        c.gridy = 3;
         loginCardContent.add(passwordLabel, c);
 
         c.weightx = 0.55;
         c.gridx = 1;
         c.gridy = 1;
-        loginCardContent.add(usernameTF, c);
+        loginCardContent.add(accountTypeBox, c);
         c.gridy = 2;
+        loginCardContent.add(usernameTF, c);
+        c.gridy = 3;
         loginCardContent.add(passwordTF, c);
 
         loginCard = new PanelRoundBorder(loginCardContent, DesignUI.blue);
@@ -146,7 +163,9 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == loginButton){
             try {
-                if (AccountInterface.Login(usernameTF.getText(), passwordTF.getText())){
+                AccountType selectedAccountType = AccountType.valueOf(accountTypeBox.getSelectedItem() == null ?
+                        AccountType.ALL.toString() : accountTypeBox.getSelectedItem().toString());
+                if (AccountInterface.Login(selectedAccountType, usernameTF.getText(), new String(passwordTF.getPassword()))){
                     incorrectLabel.setVisible(false);
                     new MenuPage();
                     frame.dispose();

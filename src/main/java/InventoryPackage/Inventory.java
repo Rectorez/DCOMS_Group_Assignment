@@ -86,4 +86,13 @@ public class Inventory {
         ItemList.remove(item);
         return true;
     }
+
+    public boolean ImportItem(Item targetItem, int amount) {
+        if (!ItemList.contains(targetItem)) return false;
+        return ItemList.get(ItemList.indexOf(targetItem)).Import(amount);
+    }
+    public boolean ExportItem(Item targetItem, int amount) {
+        if (!ItemList.contains(targetItem)) return false;
+        return ItemList.get(ItemList.indexOf(targetItem)).Export(amount);
+    }
 }

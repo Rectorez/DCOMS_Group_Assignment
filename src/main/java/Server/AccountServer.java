@@ -1,9 +1,6 @@
 package Server;
 
-import AccountPackage.Account;
-import AccountPackage.AccountHandler;
-import AccountPackage.AdminAccount;
-import AccountPackage.ExecutiveAccount;
+import AccountPackage.*;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -16,19 +13,23 @@ public class AccountServer extends UnicastRemoteObject implements AccountInterfa
 
     //Getters
     @Override
-    public List<Account> GetAccounts() throws RemoteException{
+    public List<Account> GetAccounts() {
         return AccountHandler.GetAccounts();
     }
     @Override
-    public List<AdminAccount> GetAdminAccounts() throws RemoteException{
+    public List<AdminAccount> GetAdminAccounts() {
         return AccountHandler.GetAdminAccounts();
     }
     @Override
-    public List<ExecutiveAccount> GetExecutiveAccounts() throws RemoteException{
+    public List<ExecutiveAccount> GetExecutiveAccounts() {
         return AccountHandler.GetExecutiveAccounts();
     }
     @Override
-    public Account GetAccount(String username, String password) throws RemoteException {
+    public List<Account> GetAccountsOfType(AccountType accountType) {
+        return AccountHandler.GetAccountsOfType(accountType);
+    }
+    @Override
+    public Account GetAccount(String username, String password) {
         return AccountHandler
                 .GetAccounts()
                 .stream()
@@ -40,27 +41,27 @@ public class AccountServer extends UnicastRemoteObject implements AccountInterfa
 
     //Verification
     @Override
-    public boolean HasExistingAccountPartial(String username) throws RemoteException{
-        return AccountHandler.HasExistingAccountPartial(username);
+    public boolean HasExistingAccountPartial(AccountType accountType, String username) {
+        return AccountHandler.HasExistingAccountPartial(accountType, username);
     }
     @Override
-    public boolean HasExistingAccountFull(String username, String password) throws RemoteException{
-        return AccountHandler.HasExistingAccountFull(username, password);
+    public boolean HasExistingAccountFull(AccountType accountType, String username, String password) {
+        return AccountHandler.HasExistingAccountFull(accountType, username, password);
     }
-    public boolean VerifyAccountWithEmailPassword(String email, String password) {
-        return AccountHandler.VerifyAccountWithEmailPassword(email, password);
+    public boolean VerifyAccountWithEmailPassword(AccountType accountType, String email, String password) {
+        return AccountHandler.VerifyAccountWithEmailPassword(accountType, email, password);
     }
-    public boolean VerifyAccountWithUsernamePassword(String username, String password) {
-        return AccountHandler.VerifyAccountWithUsernamePassword(username, password);
+    public boolean VerifyAccountWithUsernamePassword(AccountType accountType, String username, String password) {
+        return AccountHandler.VerifyAccountWithUsernamePassword(accountType, username, password);
     }
 
     //Login / Register
     @Override
-    public boolean Login(String usernameOrEmail, String password) throws RemoteException {
-        return AccountHandler.VerifyAccountWithUsernamePassword(usernameOrEmail, password);
+    public boolean Login(AccountType accountType, String username, String password) {
+        return AccountHandler.VerifyAccountWithUsernamePassword(accountType, username, password);
     }
     @Override
-    public void Register(Account account) throws RemoteException {
-        AccountHandler.AddAccount(account);
+    public void Register(AccountType accountType, Account account) {
+        AccountHandler.AddAccount(accountType, account);
     }
 }

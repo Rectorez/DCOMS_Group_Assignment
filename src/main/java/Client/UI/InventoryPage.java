@@ -19,11 +19,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.rmi.RemoteException;
+
+import static Client.Main.*;
 
 public class InventoryPage extends JFrame implements ActionListener, ListSelectionListener {
 
     JPanel rootPanel, contentPanel, leftPanel, rightPanel, fieldPanel, buttonPanel;
-    JList list;
+    JList<String> list;
     JScrollPane scrollPane;
     AddBtn newInvenBtn;
     DeleteBtn delBtn;
@@ -47,10 +50,20 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
         titleLabel = new JLabel("Inventories");
         titleLabel.setFont(DesignUI.titleFont);
 
-        list = new JList(new Integer[]{1,2,3,4,5,6,7,8,9});
+        list = new JList<>(new DefaultListModel<>());
         list.setFont(DesignUI.defaultFont);
         list.setCellRenderer(new MyListCellRenderer());
         list.addListSelectionListener(this);
+        try {
+            DefaultListModel<String> listModel = (DefaultListModel<String>)list.getModel();
+            for (Inventory inventory : InventoryInterface.GetInventories())
+                listModel.addElement(inventory.GetName());
+            if (listModel.size() > 0) list.setSelectedIndex(0);
+        }
+        catch (RemoteException ex) {
+            System.out.println("REMOTE EXCEPTION");
+        }
+
         scrollPane = new JScrollPane();
         scrollPane.setViewportView(list);
 
