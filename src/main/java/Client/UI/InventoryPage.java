@@ -1,5 +1,7 @@
 package Client.UI;
 
+import AccountPackage.AdminAccount;
+import AccountPackage.ExecutiveAccount;
 import Client.UI.DesignUI.AddBtn;
 import Client.UI.DesignUI.ConfirmBtn;
 import Client.UI.DesignUI.DeleteBtn;
@@ -199,6 +201,10 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
         rootPanel.add(titleLabel, BorderLayout.NORTH);
         rootPanel.add(contentPanel, BorderLayout.CENTER);
         add(rootPanel);
+
+        //If admin account: setEnabled(false)
+        enableEdit(currentAccount != null && currentAccount.getClass().equals(ExecutiveAccount.class));
+
         setVisible(true);
 
         try {
@@ -216,6 +222,11 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
     public void actionPerformed(ActionEvent e) {
         try {
             if(e.getSource() == newInvenBtn){
+                if(currentAccount != null && currentAccount.getClass().equals(AdminAccount.class)){
+                    JOptionPane.showMessageDialog(this, "This function is not available for admin account",
+                            "Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
                 InventoryInterface.AddInventory(InventoryInterface.GenerateInventory("NEW INVENTORY", "INVENTORY DESCRIPTION"));
                 Inventory newInventory = InventoryInterface.GetInventories().get(InventoryInterface.GetInventories().size() - 1);
                 DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
@@ -223,6 +234,11 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
                 list.setSelectedIndex(list.getLastVisibleIndex());
             }
             else if(e.getSource() == delBtn){
+                if(currentAccount != null && currentAccount.getClass().equals(AdminAccount.class)){
+                    JOptionPane.showMessageDialog(this, "This function is not available for admin account",
+                            "Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
                 if (list.getSelectedIndex() < 0) return;
 
                 Inventory selectedInventory = InventoryInterface.GetInventories().stream()
@@ -274,12 +290,17 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
         }
     }
 
+    private void enableEdit(boolean flag){
+        nameTF.setEnabled(flag);
+        descTA.setEnabled(flag);
+    }
+
     @Override
     public void valueChanged(ListSelectionEvent e) {
         try {
             if (list.getSelectedIndex() < 0) return;
             String inventoryID = list.getSelectedValue().split(":")[0];
-            Inventory selectedInventory = InventoryInterface.GetFullInventories().stream()
+            Inventory selectedInventory = InventoryInterface.GetInventories().stream()
                     .filter(i -> i.GetID().equals(inventoryID))
                     .findFirst()
                     .orElse(null);

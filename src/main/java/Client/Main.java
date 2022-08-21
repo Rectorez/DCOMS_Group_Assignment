@@ -1,12 +1,12 @@
 package Client;
 
+import AccountPackage.Account;
 import Client.UI.*;
 
 import Server.AccountInterface;
 import Server.InventoryInterface;
 
 import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -15,6 +15,7 @@ import java.rmi.registry.Registry;
 public class Main {
     public static AccountInterface AccountInterface;
     public static InventoryInterface InventoryInterface;
+    public static Account currentAccount = null;
     public static void main(String[] args) throws RemoteException, NotBoundException, MalformedURLException {
         try {
             Registry registry = LocateRegistry.getRegistry(1099);
@@ -28,6 +29,5 @@ public class Main {
             System.out.println("Server error!");
             e.printStackTrace();
         }
-
     }
 }

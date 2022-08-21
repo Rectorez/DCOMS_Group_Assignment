@@ -3,7 +3,6 @@ package Client.UI;
 import AccountPackage.AccountType;
 import Client.UI.Compound.PanelRound;
 import Client.UI.Compound.PanelRoundBorder;
-import Server.AccountInterface;
 import Server.GUIInterface;
 
 import javax.swing.*;
@@ -15,33 +14,38 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.nio.file.Path;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
 
-import static Client.Main.*;
+import static Client.Main.AccountInterface;
+import static Client.Main.currentAccount;
 
 public class LoginPage extends UnicastRemoteObject implements ActionListener, MouseListener, GUIInterface {
 
     JFrame frame = new JFrame();
-    JPanel rootPanel, leftPanel, rightPanel;
+    JPanel rootPanel, leftPanel, rightPanel, radioPanel;
     JLabel logo;
     PanelRoundBorder loginCard;
     PanelRound loginCardContent;
 
-    JLabel loginLabel, accountTypeLabel, usernameLabel, passwordLabel;
+    JLabel loginLabel, usernameLabel, passwordLabel;
     JTextField usernameTF;
     JPasswordField passwordTF;
     JButton loginButton;
-    JLabel incorrectLabel, registerLabel;
-    JComboBox<String> accountTypeBox;
+    JLabel incorrectLabel, registerLabel, radioLabel;
+    JRadioButton adminRadioButton, executiveRadioButton;
+    ButtonGroup roleButtonGroup;
 
     public LoginPage() throws RemoteException {
         frame.setSize(1280, 720);
         frame.setTitle("Login Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        logo = new JLabel("Logo here");
+        logo = new JLabel(getScaledImage(
+                new ImageIcon(Path.of(System.getProperty("user.dir"), "Logo.png").toString()),
+                300, 300
+        ));
         logo.setHorizontalAlignment(SwingConstants.CENTER);
 
         leftPanel = new JPanel(new BorderLayout());
@@ -52,9 +56,6 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
         loginLabel.setBorder(new EmptyBorder(10,0,10,0));
         loginLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        accountTypeLabel = new JLabel("Account Type:");
-        accountTypeLabel.setFont(DesignUI.defaultFontBold);
-        accountTypeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         usernameLabel = new JLabel("Username:");
         usernameLabel.setFont(DesignUI.defaultFontBold);
         usernameLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -71,10 +72,25 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
         passwordTF.setFont(DesignUI.defaultFont);
         passwordTF.setBorder(b);
 
-        accountTypeBox = new JComboBox<>();
-        accountTypeBox.setFont(DesignUI.defaultFont);
-        for (AccountType accountType : Arrays.stream(AccountType.values()).filter(t -> !t.equals(AccountType.ALL)).toList())
-            accountTypeBox.addItem(accountType.toString());
+        radioLabel = new JLabel("Login as: ");
+        radioLabel.setFont(DesignUI.defaultFont);
+        radioLabel.setBorder(new EmptyBorder(10,0,10,0));
+        adminRadioButton = new JRadioButton("Admin");
+        adminRadioButton.setFont(DesignUI.defaultFont);
+        adminRadioButton.setBorder(new EmptyBorder(10,0,10,0));
+        adminRadioButton.setSelected(true);
+        executiveRadioButton = new JRadioButton("Executive");
+        executiveRadioButton.setFont(DesignUI.defaultFont);
+        executiveRadioButton.setBorder(new EmptyBorder(10,0,10,0));
+
+        roleButtonGroup = new ButtonGroup();
+        roleButtonGroup.add(adminRadioButton);
+        roleButtonGroup.add(executiveRadioButton);
+
+        radioPanel = new JPanel(new GridLayout(1,3,10, 5));
+        radioPanel.add(radioLabel);
+        radioPanel.add(adminRadioButton);
+        radioPanel.add(executiveRadioButton);
 
         incorrectLabel = new JLabel("Incorrect username or password");
         incorrectLabel.setFont(DesignUI.tooltipFont);
@@ -109,6 +125,8 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
 
         loginCardContent.add(loginLabel, c);
 
+        c.gridy = 3;
+        loginCardContent.add(radioPanel, c);
         c.gridy = 4;
         loginCardContent.add(incorrectLabel, c);
         c.gridy = 5;
@@ -116,22 +134,18 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
         c.gridy = 6;
         loginCardContent.add(registerLabel, c);
 
+        c.gridy = 1;
         c.weightx = 0.45;
         c.gridwidth = 1;
-        c.gridy = 1;
-        loginCardContent.add(accountTypeLabel, c);
-        c.gridy = 2;
         loginCardContent.add(usernameLabel, c);
-        c.gridy = 3;
+        c.gridy = 2;
         loginCardContent.add(passwordLabel, c);
 
         c.weightx = 0.55;
         c.gridx = 1;
         c.gridy = 1;
-        loginCardContent.add(accountTypeBox, c);
-        c.gridy = 2;
         loginCardContent.add(usernameTF, c);
-        c.gridy = 3;
+        c.gridy = 2;
         loginCardContent.add(passwordTF, c);
 
         loginCard = new PanelRoundBorder(loginCardContent, DesignUI.blue);
@@ -159,13 +173,19 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
 
     }
 
+    private ImageIcon getScaledImage(ImageIcon og, int w, int h){
+        Image i = og.getImage();
+        Image scaled = i.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+        return new ImageIcon(scaled);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == loginButton){
             try {
-                AccountType selectedAccountType = AccountType.valueOf(accountTypeBox.getSelectedItem() == null ?
-                        AccountType.ALL.toString() : accountTypeBox.getSelectedItem().toString());
-                if (AccountInterface.Login(selectedAccountType, usernameTF.getText(), new String(passwordTF.getPassword()))){
+                AccountType selectedAccountType = adminRadioButton.isSelected() ? AccountType.ADMIN : AccountType.EXECUTIVE;
+                if(AccountInterface.Login(selectedAccountType, usernameTF.getText(), new String(passwordTF.getPassword()))){
+                    currentAccount = AccountInterface.GetAccount(selectedAccountType, usernameTF.getText(), new String(passwordTF.getPassword()));
                     incorrectLabel.setVisible(false);
                     new MenuPage();
                     frame.dispose();
