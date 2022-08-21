@@ -58,4 +58,10 @@ public class AccountServer extends UnicastRemoteObject implements AccountInterfa
     public void Register(AccountType accountType, Account account) {
         AccountHandler.AddAccount(accountType, account);
     }
+
+    //Manipulation
+    @Override
+    public boolean DeleteAccount(AccountType accountType, Account targetAccount) {
+        return AccountHandler.DeleteAccount(accountType, targetAccount);
+    }
 }
