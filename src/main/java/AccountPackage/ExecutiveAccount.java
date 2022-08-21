@@ -3,6 +3,7 @@ package AccountPackage;
 import InventoryPackage.Inventory;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class ExecutiveAccount extends Account {
     private String ExecutiveID;
@@ -21,12 +22,25 @@ public class ExecutiveAccount extends Account {
         ExecutiveID = GenerateID();
     }
     public ExecutiveAccount(String IC, String firstName, String lastName, String username, String email, String password,
-                            String status, LocalDateTime createDate, LocalDateTime deleteDate, String executiveID) {
+                            AccountStatus status, LocalDateTime createDate, LocalDateTime deleteDate, String executiveID) {
         super(IC, firstName, lastName, username, email, password, status, createDate, deleteDate);
         ExecutiveID = executiveID;
     }
 
     public String GetExecutiveID() {
         return ExecutiveID;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        ExecutiveAccount that = (ExecutiveAccount) o;
+        return Objects.equals(ExecutiveID, that.ExecutiveID);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), ExecutiveID);
     }
 }

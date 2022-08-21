@@ -1,6 +1,7 @@
 package AccountPackage;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class AdminAccount extends Account {
     private String AdminID;
@@ -19,12 +20,25 @@ public class AdminAccount extends Account {
         AdminID = GenerateID();
     }
     public AdminAccount(String IC, String firstName, String lastName, String username, String email, String password,
-                        String status, LocalDateTime createDate, LocalDateTime deleteDate, String adminID) {
+                        AccountStatus status, LocalDateTime createDate, LocalDateTime deleteDate, String adminID) {
         super(IC, firstName, lastName, username, email, password, status, createDate, deleteDate);
         AdminID = adminID;
     }
 
     public String GetAdminID() {
         return AdminID;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        AdminAccount that = (AdminAccount) o;
+        return Objects.equals(AdminID, that.AdminID);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), AdminID);
     }
 }

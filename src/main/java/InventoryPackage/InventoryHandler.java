@@ -8,6 +8,11 @@ public class InventoryHandler {
     private static List<Inventory> InventoryList = new ArrayList<>();
 
     public static List<Inventory> GetInventories() {
+        return InventoryList.stream()
+                .filter(l -> !l.GetStatus().equals(InventoryStatus.DELETED))
+                .toList();
+    }
+    public static List<Inventory> GetFullInventories() {
         return InventoryList;
     }
     public static List<Item> GetItems() {
@@ -17,37 +22,53 @@ public class InventoryHandler {
                 .orElse(Stream.empty())
                 .toList();
     }
+    public static List<Item> GetFullItems() {
+        return InventoryList.stream()
+                .map(l -> l.GetFullItemList().stream())
+                .reduce(Stream::concat)
+                .orElse(Stream.empty())
+                .toList();
+    }
     public static List<Item> GetItems(Inventory inventory) {
         return InventoryList.stream()
+                .filter(l -> l.equals(inventory))
                 .map(l -> l.GetItemList().stream())
+                .reduce(Stream::concat)
+                .orElse(Stream.empty())
+                .toList();
+    }
+    public static List<Item> GetFullItems(Inventory inventory) {
+        return InventoryList.stream()
+                .filter(l -> l.equals(inventory))
+                .map(l -> l.GetFullItemList().stream())
                 .reduce(Stream::concat)
                 .orElse(Stream.empty())
                 .toList();
     }
 
     public static boolean AddInventory(Inventory newInventory) {
-        if (InventoryHandler.GetInventories().stream()
-                .anyMatch(i -> i.equals(newInventory)))
-            return false;
+        if (GetInventories().stream().anyMatch(i -> i.equals(newInventory))) return false;
 
         InventoryList.add(newInventory);
         return true;
     }
     public static boolean UpdateInventory(Inventory oldInventory, Inventory newInventory) {
-        if (InventoryHandler.GetInventories().stream().noneMatch(i -> i.equals(oldInventory)) ||
-                InventoryHandler.GetInventories().stream().anyMatch(i -> i.equals(newInventory)))
-            return false;
+        if (GetInventories().stream().noneMatch(i -> i.equals(oldInventory)) ||
+                GetInventories().stream().anyMatch(i -> i.equals(newInventory)) ||
+                !oldInventory.GetID().equals(newInventory.GetID())) return false;
 
-        InventoryList.set(InventoryList.indexOf(oldInventory), newInventory);
+        GetFullInventories().set(GetFullInventories().indexOf(oldInventory), newInventory);
         return true;
     }
-    public static boolean DeleteInventory(Inventory inventory) {
-        if (InventoryHandler.GetInventories().stream()
-                .noneMatch(i -> i.equals(inventory)))
-            return false;
+    public static boolean DeleteInventory(Inventory targetInventory) {
+        if (InventoryHandler.GetInventories().stream().noneMatch(i -> i.equals(targetInventory))) return false;
 
-        InventoryList.remove(inventory);
-        return true;
+        Inventory inventory = InventoryList.stream()
+                .filter(i -> i.equals(targetInventory))
+                .findFirst()
+                .orElse(null);
+        if (inventory == null) return false;
+        return inventory.Delete();
     }
 
     public static boolean AddItem(Item newItem) {
@@ -61,26 +82,27 @@ public class InventoryHandler {
                 .AddItem(newItem);
     }
     public static boolean UpdateItem(Item oldItem, Item newItem) {
-        if (InventoryList.stream().noneMatch(i -> i.GetID().equals(oldItem.GetInventoryID())) ||
-                InventoryList.stream().noneMatch(i -> i.GetID().equals(newItem.GetInventoryID())) ||
-                !oldItem.GetInventoryID().equals(newItem.GetInventoryID()))
-            return false;
+        if (GetInventories().stream().noneMatch(i -> i.GetID().equals(oldItem.GetInventoryID())) ||
+                GetInventories().stream().anyMatch(i -> i.GetID().equals(newItem.GetInventoryID())) ||
+                oldItem.GetID().equals(newItem.GetID())) return false;
 
-        return InventoryList.stream()
+        Inventory targetInventory = GetFullInventories().stream()
                 .filter(i -> i.GetID().equals(oldItem.GetInventoryID()))
                 .findFirst()
-                .orElse(new Inventory("N/A", "N/A"))
-                .UpdateItem(oldItem, newItem);
+                .orElse(null);
+        if (targetInventory == null) return false;
+        targetInventory.UpdateItem(oldItem, newItem);
+        return true;
     }
-    public static boolean DeleteItem(Item item) {
-        if (InventoryList.stream().noneMatch(i -> i.GetID().equals(item.GetInventoryID())))
-            return false;
+    public static boolean DeleteItem(Item targetItem) {
+        if (InventoryList.stream().noneMatch(i -> i.GetID().equals(targetItem.GetInventoryID()))) return false;
 
-        return InventoryList.stream()
-                .filter(i -> i.GetID().equals(item.GetInventoryID()))
+        Inventory inventory = InventoryList.stream()
+                .filter(i -> i.GetID().equals(targetItem.GetInventoryID()))
                 .findFirst()
-                .orElse(new Inventory("N/A", "N/A"))
-                .DeleteItem(item);
+                .orElse(null);
+        if (inventory == null) return false;
+        return inventory.DeleteItem(targetItem);
     }
 
     public static boolean ImportItem(Item targetItem, int amount) {

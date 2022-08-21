@@ -7,16 +7,33 @@ public class AccountHandler {
     private static List<Account> AccountList = new ArrayList<>();
 
     public static List<Account> GetAccounts() {
+        return AccountList.stream()
+                .filter(a -> a.GetStatus().equals(AccountStatus.ACTIVE))
+                .toList();
+    }
+    public static List<Account> GetFullAccounts() {
         return AccountList;
     }
     public static List<AdminAccount> GetAdminAccounts() {
-        return AccountList.stream()
+        return GetAccounts().stream()
+                .filter(a -> a.getClass().equals(AdminAccount.class))
+                .map(a -> (AdminAccount)a)
+                .toList();
+    }
+    public static List<AdminAccount> GetFullAdminAccounts() {
+        return GetFullAccounts().stream()
                 .filter(a -> a.getClass().equals(AdminAccount.class))
                 .map(a -> (AdminAccount)a)
                 .toList();
     }
     public static List<ExecutiveAccount> GetExecutiveAccounts() {
-        return AccountList.stream()
+        return GetAccounts().stream()
+                .filter(a -> a.getClass().equals(ExecutiveAccount.class))
+                .map(a -> (ExecutiveAccount)a)
+                .toList();
+    }
+    public static List<ExecutiveAccount> GetFullExecutiveAccounts() {
+        return GetFullAccounts().stream()
                 .filter(a -> a.getClass().equals(ExecutiveAccount.class))
                 .map(a -> (ExecutiveAccount)a)
                 .toList();
@@ -62,5 +79,14 @@ public class AccountHandler {
         if (HasExistingAccountFull(accountType, newAccount.GetUsername(), newAccount.GetPassword())) return false;
         AccountList.add(newAccount);
         return true;
+    }
+    public static boolean DeleteAccount(AccountType accountType, Account targetAccount) {
+        if (!HasExistingAccountFull(accountType, targetAccount.GetUsername(), targetAccount.GetPassword())) return false;
+        Account account = GetAccountsOfType(accountType).stream()
+                .filter(a -> a.equals(targetAccount))
+                .findFirst()
+                .orElse(null);
+        if (account == null) return false;
+        return account.Delete();
     }
 }

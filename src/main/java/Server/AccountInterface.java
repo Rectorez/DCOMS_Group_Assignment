@@ -25,4 +25,6 @@ public interface AccountInterface extends Remote {
     boolean Login(AccountType accountType, String username, String password) throws RemoteException;
     void Register(AccountType accountType, Account account) throws RemoteException;
 
+    //Manipulation
+    boolean DeleteAccount(AccountType accountType, Account targetAccount) throws RemoteException;
 }

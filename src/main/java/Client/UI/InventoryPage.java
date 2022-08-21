@@ -7,6 +7,7 @@ import Client.UI.DesignUI.DiscardBtn;
 import Client.UI.Utility.MyListCellRenderer;
 import InventoryPackage.Inventory;
 import InventoryPackage.InventoryHandler;
+import Server.InventoryInterface;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -21,6 +22,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static Client.Main.*;
@@ -56,15 +58,6 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
         list.setFont(DesignUI.defaultFont);
         list.setCellRenderer(new MyListCellRenderer());
         list.addListSelectionListener(this);
-        try {
-            DefaultListModel<String> listModel = (DefaultListModel<String>)list.getModel();
-            for (Inventory inventory : InventoryInterface.GetInventories())
-                listModel.addElement(inventory.GetID() + ": " + inventory.GetName());
-            if (listModel.size() > 0) list.setSelectedIndex(0);
-        }
-        catch (RemoteException ex) {
-            System.out.println("REMOTE EXCEPTION");
-        }
 
         scrollPane = new JScrollPane();
         scrollPane.setViewportView(list);
@@ -125,10 +118,13 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
         delValLabel.setFont(DesignUI.defaultFont);
 
         delBtn = new DeleteBtn();
+        delBtn.setEnabled(false);
         delBtn.addActionListener(this);
         discardBtn = new DiscardBtn();
+        discardBtn.setEnabled(false);
         discardBtn.addActionListener(this);
         confirmBtn = new ConfirmBtn();
+        confirmBtn.setEnabled(false);
         confirmBtn.addActionListener(this);
 
         fieldPanel = new JPanel(new GridBagLayout());
@@ -204,46 +200,109 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
         rootPanel.add(contentPanel, BorderLayout.CENTER);
         add(rootPanel);
         setVisible(true);
-    }
 
+        try {
+            DefaultListModel<String> listModel = (DefaultListModel<String>)list.getModel();
+            for (Inventory inventory : InventoryInterface.GetInventories())
+                listModel.addElement(inventory.GetID() + ": " + inventory.GetName());
+            if (listModel.size() > 0) list.setSelectedIndex(0);
+        }
+        catch (RemoteException ex) {
+            System.out.println("REMOTE EXCEPTION");
+        }
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == newInvenBtn){
+        try {
+            if(e.getSource() == newInvenBtn){
+                InventoryInterface.AddInventory(InventoryInterface.GenerateInventory("NEW INVENTORY", "INVENTORY DESCRIPTION"));
+                Inventory newInventory = InventoryInterface.GetInventories().get(InventoryInterface.GetInventories().size() - 1);
+                DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
+                model.addElement(newInventory.GetID() + ": " + newInventory.GetName());
+                list.setSelectedIndex(list.getLastVisibleIndex());
+            }
+            else if(e.getSource() == delBtn){
+                if (list.getSelectedIndex() < 0) return;
 
-        }
-        else if(e.getSource() == delBtn){
+                Inventory selectedInventory = InventoryInterface.GetInventories().stream()
+                        .filter(i -> i.GetID().equals(list.getSelectedValue().split(":")[0]))
+                        .findFirst()
+                        .orElse(null);
+                if (selectedInventory == null) return;
+                int deleteIndex = InventoryInterface.GetInventories().indexOf(selectedInventory);
 
+                InventoryInterface.DeleteInventory(selectedInventory);
+                DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
+                list.setSelectedIndex(model.size() > 0 ? 0 : -1);
+                model.removeElementAt(deleteIndex);
+            }
+            else if(e.getSource() == discardBtn){
+                Inventory currentInventory = InventoryInterface.GetInventories().stream()
+                        .filter(i -> i.GetID().equals(idTF.getText()))
+                        .findFirst()
+                        .orElse(null);
+                if (currentInventory == null) return;
+                nameTF.setText(currentInventory.GetName());
+                descTA.setText(currentInventory.GetDescription());
+                //new MenuPage();
+                //dispose();
+            }
+            else if(e.getSource() == confirmBtn){
+                if (list.getSelectedIndex() < 0) return;
+
+                Inventory selectedInventory = InventoryInterface.GetInventories().stream()
+                        .filter(i -> i.GetID().equals(list.getSelectedValue().split(":")[0]))
+                        .findFirst()
+                        .orElse(null);
+                if (selectedInventory == null) return;
+                Inventory updatedInventory = InventoryInterface.GenerateInventory(selectedInventory.GetID(), nameTF.getText(), descTA.getText(),
+                        selectedInventory.GetFullItemList(), selectedInventory.GetStatus(),
+                        selectedInventory.GetCreateDate(), selectedInventory.GetDeleteDate());
+                InventoryInterface.UpdateInventory(selectedInventory, updatedInventory);
+
+                DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
+                model.setElementAt(updatedInventory.GetID() + ": " + updatedInventory.GetName(),
+                        model.indexOf(selectedInventory.GetID() + ": " + selectedInventory.GetName()));
+                list.setSelectedIndex(list.getSelectedIndex());
+                //new MenuPage();
+                //dispose();
+            }
         }
-        else if(e.getSource() == discardBtn){
-            new MenuPage();
-            dispose();
-        }
-        else if(e.getSource() == confirmBtn){
-            new MenuPage();
-            dispose();
+        catch (RemoteException ex) {
+            System.out.println("REMOTE EXCEPTION");
         }
     }
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
         try {
+            if (list.getSelectedIndex() < 0) return;
             String inventoryID = list.getSelectedValue().split(":")[0];
-            Inventory selectedInventory = InventoryInterface.GetInventories().stream()
+            Inventory selectedInventory = InventoryInterface.GetFullInventories().stream()
                     .filter(i -> i.GetID().equals(inventoryID))
                     .findFirst()
                     .orElse(null);
             if (selectedInventory == null) {
                 JOptionPane.showMessageDialog(this, "No Inventory Found With ID: " + inventoryID);
+
+                delBtn.setEnabled(false);
+                discardBtn.setEnabled(false);
+                confirmBtn.setEnabled(true);
             }
             else {
                 idTF.setText(selectedInventory.GetID());
                 nameTF.setText(selectedInventory.GetName());
                 descTA.setText(selectedInventory.GetDescription());
+
+                statusValLabel.setText(selectedInventory.GetStatus().toString());
+                delValLabel.setText(selectedInventory.GetDeleteDate() == null ? "N/A" : selectedInventory.GetDeleteDate().format(DateTimeFormatter.ofPattern("hh:mm:ss a, EEEE, d MMMM yyyy")));
+                createdValLabel.setText(selectedInventory.GetCreateDate() == null ? "N/A" : selectedInventory.GetCreateDate().format(DateTimeFormatter.ofPattern("hh:mm:ss a, EEEE, d MMMM yyyy")));
                 countValLabel.setText(String.valueOf(selectedInventory.GetItemList().size()));
-                createdValLabel.setText(selectedInventory.GetCreateDate().format(DateTimeFormatter.ofPattern("hh:mm:ss a, EEEE, d MMMM yyyy")));
-                delValLabel.setText(selectedInventory.GetDeleteDate().format(DateTimeFormatter.ofPattern("hh:mm:ss a, EEEE, d MMMM yyyy")));
-                statusValLabel.setText(selectedInventory.GetStatus());
+
+                delBtn.setEnabled(true);
+                discardBtn.setEnabled(true);
+                confirmBtn.setEnabled(true);
             }
         }
         catch (RemoteException ex) {
