@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.nio.file.Path;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
@@ -41,7 +42,10 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
         frame.setTitle("Login Page");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        logo = new JLabel("Logo here");
+        logo = new JLabel(getScaledImage(
+                new ImageIcon(Path.of(System.getProperty("user.dir"), "Logo.png").toString()),
+                300, 300
+        ));
         logo.setHorizontalAlignment(SwingConstants.CENTER);
 
         leftPanel = new JPanel(new BorderLayout());
@@ -169,11 +173,16 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
 
     }
 
+    private ImageIcon getScaledImage(ImageIcon og, int w, int h){
+        Image i = og.getImage();
+        Image scaled = i.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+        return new ImageIcon(scaled);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == loginButton){
             try {
-                //TODO after login setCurrentAccount
                 AccountType selectedAccountType = adminRadioButton.isSelected() ? AccountType.ADMIN : AccountType.EXECUTIVE;
                 if(AccountInterface.Login(selectedAccountType, usernameTF.getText(), new String(passwordTF.getPassword()))){
                     currentAccount = AccountInterface.GetAccount(selectedAccountType, usernameTF.getText(), new String(passwordTF.getPassword()));

@@ -1,5 +1,7 @@
 package Client.UI;
 
+import AccountPackage.AdminAccount;
+import AccountPackage.ExecutiveAccount;
 import Client.UI.DesignUI.AddBtn;
 import Client.UI.DesignUI.ConfirmBtn;
 import Client.UI.DesignUI.DeleteBtn;
@@ -203,6 +205,10 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
         rootPanel.add(titleLabel, BorderLayout.NORTH);
         rootPanel.add(contentPanel, BorderLayout.CENTER);
         add(rootPanel);
+
+        //If admin account: setEnabled(false)
+        enableEdit(currentAccount != null && currentAccount.getClass().equals(ExecutiveAccount.class));
+
         setVisible(true);
     }
 
@@ -210,10 +216,18 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == newInvenBtn){
-
+            if(currentAccount != null && currentAccount.getClass().equals(AdminAccount.class)){
+                JOptionPane.showMessageDialog(this, "This function is not available for admin account",
+                        "Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
         }
         else if(e.getSource() == delBtn){
-
+            if(currentAccount != null && currentAccount.getClass().equals(AdminAccount.class)){
+                JOptionPane.showMessageDialog(this, "This function is not available for admin account",
+                        "Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
         }
         else if(e.getSource() == discardBtn){
             new MenuPage();
@@ -223,6 +237,11 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
             new MenuPage();
             dispose();
         }
+    }
+
+    private void enableEdit(boolean flag){
+        nameTF.setEnabled(flag);
+        descTA.setEnabled(flag);
     }
 
     @Override
