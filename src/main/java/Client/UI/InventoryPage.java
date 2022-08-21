@@ -261,8 +261,8 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
                 if (currentInventory == null) return;
                 nameTF.setText(currentInventory.GetName());
                 descTA.setText(currentInventory.GetDescription());
-                //new MenuPage();
-                //dispose();
+                new MenuPage();
+                dispose();
             }
             else if(e.getSource() == confirmBtn){
                 if (list.getSelectedIndex() < 0) return;
@@ -281,8 +281,8 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
                 model.setElementAt(updatedInventory.GetID() + ": " + updatedInventory.GetName(),
                         model.indexOf(selectedInventory.GetID() + ": " + selectedInventory.GetName()));
                 list.setSelectedIndex(list.getSelectedIndex());
-                //new MenuPage();
-                //dispose();
+                new MenuPage();
+                dispose();
             }
         }
         catch (RemoteException ex) {

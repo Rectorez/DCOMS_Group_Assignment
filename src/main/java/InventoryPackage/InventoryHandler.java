@@ -1,5 +1,9 @@
 package InventoryPackage;
 
+import AccountPackage.Account;
+
+import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -120,5 +124,50 @@ public class InventoryHandler {
                 .findFirst()
                 .orElse(new Inventory("N/A", "N/A"))
                 .ExportItem(targetItem, amount);
+    }
+
+    private static boolean WriteAccountsToFile(){
+        //Check dir exist
+        String folderDir = Path.of(System.getProperty("user.dir"), "ServerDatabase").toString();
+        File f = new File(folderDir);
+        if(!f.exists()){
+            //If not create
+            f.mkdir();
+            System.out.println("Created directory: " + folderDir);
+        }
+        String fileDir = Path.of(folderDir, "Inventories.ser").toString();
+        try{
+            FileOutputStream file = new FileOutputStream(fileDir);
+            ObjectOutputStream oos = new ObjectOutputStream(file);
+            oos.writeObject(InventoryList);
+
+            oos.close();
+            file.close();
+
+            return true;
+        }
+        catch (IOException e) {
+            return false;
+        }
+    }
+
+    private static boolean ReadAccountsToList() {
+        File target = Path.of(System.getProperty("user.dir"), "ServerDatabase", "Inventories.ser").toFile();
+        if(target.exists()){
+            try {
+                FileInputStream file = new FileInputStream(target);
+                ObjectInputStream obj = new ObjectInputStream(file);
+
+                InventoryList = (List<Inventory>) obj.readObject();
+                return true;
+            }
+            catch (IOException | ClassNotFoundException e) {
+                return false;
+            }
+        }
+        else{
+            System.out.println("Accounts.ser does not exist");
+            return false;
+        }
     }
 }

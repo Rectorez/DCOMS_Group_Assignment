@@ -80,7 +80,7 @@ public class MenuPage extends JFrame implements MouseListener, ComponentListener
 
     }
 
-    private String getFilePath(NameConstant e){
+    private String  getFilePath(NameConstant e){
         return Path.of(System.getProperty("user.dir"), getFileName(e) + ".png").toString();
     }
 

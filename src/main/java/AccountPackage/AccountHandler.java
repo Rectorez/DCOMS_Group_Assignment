@@ -1,5 +1,7 @@
 package AccountPackage;
 
+import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,5 +90,50 @@ public class AccountHandler {
                 .orElse(null);
         if (account == null) return false;
         return account.Delete();
+    }
+
+    private static boolean WriteAccountsToFile(){
+        //Check dir exist
+        String folderDir = Path.of(System.getProperty("user.dir"), "ServerDatabase").toString();
+        File f = new File(folderDir);
+        if(!f.exists()){
+            //If not create
+            f.mkdir();
+            System.out.println("Created directory: " + folderDir);
+        }
+        String fileDir = Path.of(folderDir, "Accounts.ser").toString();
+        try{
+            FileOutputStream file = new FileOutputStream(fileDir);
+            ObjectOutputStream oos = new ObjectOutputStream(file);
+            oos.writeObject(AccountList);
+
+            oos.close();
+            file.close();
+
+            return true;
+        }
+        catch (IOException e) {
+            return false;
+        }
+    }
+
+    private static boolean ReadAccountsToList() {
+        File target = Path.of(System.getProperty("user.dir"), "ServerDatabase", "Accounts.ser").toFile();
+        if(target.exists()){
+            try {
+                FileInputStream file = new FileInputStream(target);
+                ObjectInputStream obj = new ObjectInputStream(file);
+
+                AccountList = (List<Account>) obj.readObject();
+                return true;
+            }
+            catch (IOException | ClassNotFoundException e) {
+                return false;
+            }
+        }
+        else{
+            System.out.println("Accounts.ser does not exist");
+            return false;
+        }
     }
 }
