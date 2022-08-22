@@ -7,6 +7,7 @@ import Client.UI.DesignUI.DeleteBtn;
 import Client.UI.DesignUI.ConfirmBtn;
 import Client.UI.Utility.MyListCellRenderer;
 import InventoryPackage.Inventory;
+import InventoryPackage.InventoryHandler;
 import InventoryPackage.Item;
 import Server.InventoryInterface;
 
@@ -242,8 +243,13 @@ public class EditItemPage extends JFrame implements ActionListener, ListSelectio
                 dispose();
             }
             else if(e.getSource() == confirmBtn){
-                new MenuPage();
-                dispose();
+                Item oldItem = (Item) list.getSelectedValue();
+                Item newItem = InventoryInterface.GenerateItem(idTF.getText(),((Inventory)
+                        invenComboBoxRight.getSelectedItem()).GetID(), nameTF.getText(),
+                        Double.parseDouble(priceTF.getText()),  Double.parseDouble(costTF.getText()),
+                        Integer.parseInt(storedTF.getText()), Integer.parseInt(soldTF.getText()));
+                InventoryInterface.UpdateItem(oldItem, newItem);
+                updateComboboxes();
             }
             else if(e.getSource() == invenComboBoxLeft){
                 System.out.println("Updating list");
