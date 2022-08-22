@@ -122,7 +122,7 @@ public class InventoryPage extends JFrame implements ActionListener, ListSelecti
         delBtn = new DeleteBtn();
         delBtn.setEnabled(false);
         delBtn.addActionListener(this);
-        discardBtn = new DiscardBtn();
+        discardBtn = new DiscardBtn("Back to Menu");
         discardBtn.setEnabled(false);
         discardBtn.addActionListener(this);
         confirmBtn = new ConfirmBtn();

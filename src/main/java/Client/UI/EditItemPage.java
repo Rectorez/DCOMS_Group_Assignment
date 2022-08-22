@@ -1,10 +1,14 @@
 package Client.UI;
 
+import Client.Main;
 import Client.UI.DesignUI.AddBtn;
 import Client.UI.DesignUI.DiscardBtn;
 import Client.UI.DesignUI.DeleteBtn;
 import Client.UI.DesignUI.ConfirmBtn;
 import Client.UI.Utility.MyListCellRenderer;
+import InventoryPackage.Inventory;
+import InventoryPackage.Item;
+import Server.InventoryInterface;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -19,7 +23,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.rmi.RemoteException;
+import java.util.Arrays;
 
+import static Client.Main.*;
 public class EditItemPage extends JFrame implements ActionListener, ListSelectionListener {
     JLabel titleLabel;
     JPanel rootPanel, contentPanel, leftPanel, rightPanel, selectPanel, fieldPanel, buttonPanel;
@@ -52,6 +59,8 @@ public class EditItemPage extends JFrame implements ActionListener, ListSelectio
 
         invenComboBoxLeft = new JComboBox();
         invenComboBoxLeft.setFont(DesignUI.defaultFont);
+        invenComboBoxLeft.addActionListener(this);
+        invenComboBoxLeft.setRenderer(new MyListCellRenderer());
 
         selectPanel = new JPanel(new BorderLayout(5,5));
         selectPanel.add(selectLabel, BorderLayout.NORTH);
@@ -105,6 +114,7 @@ public class EditItemPage extends JFrame implements ActionListener, ListSelectio
         idTF.setBorder(b);
         invenComboBoxRight = new JComboBox();
         invenComboBoxRight.setFont(DesignUI.defaultFont);
+        invenComboBoxRight.setRenderer(new MyListCellRenderer());
         nameTF = new JTextField();
         nameTF.setFont(DesignUI.defaultFont);
         nameTF.setBorder(b);
@@ -164,7 +174,7 @@ public class EditItemPage extends JFrame implements ActionListener, ListSelectio
 
         delBtn = new DeleteBtn();
         delBtn.addActionListener(this);
-        discardBtn = new DiscardBtn();
+        discardBtn = new DiscardBtn("Back to Menu");
         discardBtn.addActionListener(this);
         confirmBtn = new ConfirmBtn();
         confirmBtn.addActionListener(this);
@@ -201,29 +211,122 @@ public class EditItemPage extends JFrame implements ActionListener, ListSelectio
         rootPanel.add(contentPanel, BorderLayout.CENTER);
 
         add(rootPanel);
+
+        setupComboboxes();
         setVisible(true);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == addBtn){
+        try{
+            if(e.getSource() == addBtn){
 
-        }
-        else if(e.getSource() == delBtn){
+            }
+            else if(e.getSource() == delBtn){
+                if (list.getSelectedIndex() < 0) return;
 
+                String password = JOptionPane.showInputDialog("Please enter password to verify deletion.");
+                if(password.equals(currentAccount.GetPassword())){
+                    var target = (Item)list.getSelectedValue();
+
+                    InventoryInterface.DeleteItem(target);
+                    updateComboboxes();
+                }
+                else{
+                    JOptionPane.showMessageDialog(this, "Password does not match", "Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            }
+            else if(e.getSource() == discardBtn){
+                new MenuPage();
+                dispose();
+            }
+            else if(e.getSource() == confirmBtn){
+                new MenuPage();
+                dispose();
+            }
+            else if(e.getSource() == invenComboBoxLeft){
+                System.out.println("Updating list");
+                updateItemList();
+            }
         }
-        else if(e.getSource() == discardBtn){
-            new MenuPage();
-            dispose();
+        catch (RemoteException ex){
+            System.out.println("REMOTE EXCEPTION");
         }
-        else if(e.getSource() == confirmBtn){
-            new MenuPage();
-            dispose();
-        }
+
     }
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
+        if(list.getSelectedIndex() == -1) return;
 
+        Item i = (Item) list.getSelectedValue();
+        idTF.setText(i.GetID());
+        nameTF.setText(i.GetName());
+        priceTF.setText(String.valueOf(i.GetPrice()));
+        costTF.setText(String.valueOf(i.GetCost()));
+        storedTF.setText(String.valueOf(i.GetStoredQuantity()));
+        soldTF.setText(String.valueOf(i.GetSoldQuantity()));
+
+        try{
+            var target = InventoryInterface.GetInventories().stream().filter(x -> x.GetID().equals(i.GetInventoryID())).findFirst().orElse(null);
+            if(target == null) throw new IndexOutOfBoundsException(); //Inventory is not found (not likely to happen)
+            invenComboBoxRight.setSelectedItem(target);
+        }
+        catch (RemoteException ex) {
+            System.out.println("REMOTE EXCEPTION");
+        }
+        catch (IndexOutOfBoundsException exp){
+            System.out.println("Invalid Inventory of item");
+        }
+
+
+    }
+
+    private void setupComboboxes() {
+        try{
+            invenComboBoxLeft.removeAllItems();
+            invenComboBoxRight.removeAllItems();
+            InventoryInterface.GetInventories().stream().forEach(x ->{
+                invenComboBoxLeft.addItem(x);
+                invenComboBoxRight.addItem(x);
+            });
+        }
+        catch(RemoteException e){
+            System.out.println("REMOTE EXCEPTION");
+        }
+    }
+
+    private void updateComboboxes(){
+        var target = (Inventory)invenComboBoxLeft.getSelectedItem();
+        setupComboboxes(); //Update current comboBox with latest data from server
+        invenComboBoxLeft.setSelectedItem(target);
+    }
+    private void updateItemList(){
+        if(invenComboBoxLeft.getSelectedIndex() == -1){
+            return;
+        }
+        DefaultListModel model = new DefaultListModel();
+        try{
+            ((Inventory)invenComboBoxLeft.getSelectedItem()).GetItemList().forEach(x -> model.addElement(x));
+
+            list.setModel(model);
+
+            if(model.size() > 0) list.setSelectedIndex(0);
+            else clearAllFields();;
+        }
+        catch (NullPointerException e){
+            System.out.println("Inventory does not exist");
+            list.setModel(model);
+        }
+    }
+
+    private void clearAllFields(){
+        idTF.setText("");
+        nameTF.setText("");
+        priceTF.setText("");
+        costTF.setText("");
+        storedTF.setText("");
+        soldTF.setText("");
     }
 }
