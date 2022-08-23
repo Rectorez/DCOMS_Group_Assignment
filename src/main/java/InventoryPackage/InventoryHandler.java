@@ -49,7 +49,6 @@ public class InventoryHandler {
                 .orElse(Stream.empty())
                 .toList();
     }
-
     public static boolean AddInventory(Inventory newInventory) {
         if (GetInventories().stream().anyMatch(i -> i.equals(newInventory))) return false;
 
@@ -125,8 +124,15 @@ public class InventoryHandler {
                 .orElse(new Inventory("N/A", "N/A"))
                 .ExportItem(targetItem, amount);
     }
-
-    private static boolean WriteAccountsToFile(){
+    public static boolean RemoveItem(Item targetItem, int amount) {
+        if (InventoryList.stream().noneMatch(l -> l.GetItemList().contains(targetItem))) return false;
+        return InventoryList.stream()
+                .filter(l -> l.GetItemList().contains(targetItem))
+                .findFirst()
+                .orElse(new Inventory("N/A", "N/A"))
+                .RemoveItem(targetItem, amount);
+    }
+    private static boolean WriteInventoriesToFile(){
         //Check dir exist
         String folderDir = Path.of(System.getProperty("user.dir"), "ServerDatabase").toString();
         File f = new File(folderDir);
@@ -151,7 +157,7 @@ public class InventoryHandler {
         }
     }
 
-    private static boolean ReadAccountsToList() {
+    private static boolean ReadInventoriesToList() {
         File target = Path.of(System.getProperty("user.dir"), "ServerDatabase", "Inventories.ser").toFile();
         if(target.exists()){
             try {
@@ -166,7 +172,7 @@ public class InventoryHandler {
             }
         }
         else{
-            System.out.println("Accounts.ser does not exist");
+            System.out.println("Inventories.ser does not exist");
             return false;
         }
     }

@@ -3,6 +3,8 @@ package Client;
 import AccountPackage.Account;
 import Client.UI.*;
 
+import InventoryPackage.Inventory;
+import InventoryPackage.Item;
 import Server.AccountInterface;
 import Server.InventoryInterface;
 
@@ -11,6 +13,9 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static AccountInterface AccountInterface;
@@ -22,9 +27,7 @@ public class Main {
             AccountInterface = (AccountInterface) registry.lookup("AccountServer");
             InventoryInterface = (InventoryInterface) registry.lookup("InventoryServer");
 
-            //GUIInterface loginPage = (GUIInterface) registry.lookup("LoginPage");
-            LoginPage loginPage = new LoginPage();
-            loginPage.displayGUI();
+            new LoginPage();
         } catch(Exception e) {
             System.out.println("Server error!");
             e.printStackTrace();
