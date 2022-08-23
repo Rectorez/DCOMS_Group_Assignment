@@ -7,6 +7,7 @@ import Client.UI.DesignUI.DeleteBtn;
 import Client.UI.DesignUI.ConfirmBtn;
 import Client.UI.Utility.MyListCellRenderer;
 import InventoryPackage.Inventory;
+import InventoryPackage.InventoryHandler;
 import InventoryPackage.Item;
 import Server.InventoryInterface;
 
@@ -73,6 +74,7 @@ public class EditItemPage extends JFrame implements ActionListener, ListSelectio
         scrollPane = new JScrollPane(list);
 
         addBtn = new AddBtn("Add New Item");
+        addBtn.addActionListener(this);
 
         leftPanel = new JPanel(new BorderLayout(5, 10)){
             @Override
@@ -220,7 +222,11 @@ public class EditItemPage extends JFrame implements ActionListener, ListSelectio
     public void actionPerformed(ActionEvent e) {
         try{
             if(e.getSource() == addBtn){
-
+                if(invenComboBoxLeft.getSelectedIndex() < 0) return;
+                InventoryInterface.AddItem(InventoryInterface.GenerateItem(((Inventory)invenComboBoxLeft.getSelectedItem())
+                        .GetID(), "New Item", 0, 0));
+                updateComboboxes();
+                list.setSelectedIndex(list.getLastVisibleIndex());
             }
             else if(e.getSource() == delBtn){
                 if (list.getSelectedIndex() < 0) return;
@@ -300,7 +306,7 @@ public class EditItemPage extends JFrame implements ActionListener, ListSelectio
     private void updateComboboxes(){
         var target = (Inventory)invenComboBoxLeft.getSelectedItem();
         setupComboboxes(); //Update current comboBox with latest data from server
-        invenComboBoxLeft.setSelectedItem(target);
+        invenComboBoxLeft.setSelectedItem(target); //will trigger actionPerformed to call updateItemList
     }
     private void updateItemList(){
         if(invenComboBoxLeft.getSelectedIndex() == -1){
