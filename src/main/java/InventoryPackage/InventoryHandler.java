@@ -53,6 +53,7 @@ public class InventoryHandler {
         if (GetInventories().stream().anyMatch(i -> i.equals(newInventory))) return false;
 
         InventoryList.add(newInventory);
+        WriteInventoriesToFile();
         return true;
     }
     public static boolean UpdateInventory(Inventory oldInventory, Inventory newInventory) {
@@ -61,6 +62,7 @@ public class InventoryHandler {
                 !oldInventory.GetID().equals(newInventory.GetID())) return false;
 
         GetFullInventories().set(GetFullInventories().indexOf(oldInventory), newInventory);
+        WriteInventoriesToFile();
         return true;
     }
     public static boolean DeleteInventory(Inventory targetInventory) {
@@ -71,18 +73,22 @@ public class InventoryHandler {
                 .findFirst()
                 .orElse(null);
         if (inventory == null) return false;
-        return inventory.Delete();
+        boolean success = inventory.Delete();
+        if(success) WriteInventoriesToFile();
+        return success;
     }
 
     public static boolean AddItem(Item newItem) {
         if (InventoryList.stream().noneMatch(i -> i.GetID().equals(newItem.GetInventoryID())))
             return false;
 
-        return InventoryList.stream()
+        var success = InventoryList.stream()
                 .filter(i -> i.GetID().equals(newItem.GetInventoryID()))
                 .findFirst()
                 .orElse(new Inventory("N/A", "N/A"))
                 .AddItem(newItem);
+        if(success) WriteInventoriesToFile();
+        return success;
     }
     public static boolean UpdateItem(Item oldItem, Item newItem) {
         if (GetInventories().stream().noneMatch(i -> i.GetID().equals(oldItem.GetInventoryID())) ||
@@ -95,6 +101,7 @@ public class InventoryHandler {
                 .orElse(null);
         if (targetInventory == null) return false;
         targetInventory.UpdateItem(oldItem, newItem);
+        WriteInventoriesToFile();
         return true;
     }
     public static boolean DeleteItem(Item targetItem) {
@@ -105,7 +112,9 @@ public class InventoryHandler {
                 .findFirst()
                 .orElse(null);
         if (inventory == null) return false;
-        return inventory.DeleteItem(targetItem);
+        var success = inventory.DeleteItem(targetItem);
+        if(success) WriteInventoriesToFile();
+        return success;
     }
 
     public static boolean ImportItem(Item targetItem, int amount) {
@@ -118,19 +127,23 @@ public class InventoryHandler {
     }
     public static boolean ExportItem(Item targetItem, int amount) {
         if (InventoryList.stream().noneMatch(l -> l.GetItemList().contains(targetItem))) return false;
-        return InventoryList.stream()
+        var success = InventoryList.stream()
                 .filter(l -> l.GetItemList().contains(targetItem))
                 .findFirst()
                 .orElse(new Inventory("N/A", "N/A"))
                 .ExportItem(targetItem, amount);
+        if(success) WriteInventoriesToFile();
+        return success;
     }
     public static boolean RemoveItem(Item targetItem, int amount) {
         if (InventoryList.stream().noneMatch(l -> l.GetItemList().contains(targetItem))) return false;
-        return InventoryList.stream()
+        var success = InventoryList.stream()
                 .filter(l -> l.GetItemList().contains(targetItem))
                 .findFirst()
                 .orElse(new Inventory("N/A", "N/A"))
                 .RemoveItem(targetItem, amount);
+        if(success) WriteInventoriesToFile();
+        return success;
     }
     private static boolean WriteInventoriesToFile(){
         //Check dir exist

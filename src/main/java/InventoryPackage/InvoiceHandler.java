@@ -2,7 +2,9 @@ package InventoryPackage;
 
 import java.io.*;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class InvoiceHandler {
@@ -19,6 +21,7 @@ public class InvoiceHandler {
     public static boolean AddInvoice(Invoice invoice) {
         if (GetInvoice().stream().anyMatch(i -> i.equals(invoice))) return false;
         InvoiceList.add(invoice);
+        WriteInvoicesToFile();
         return true;
     }
 

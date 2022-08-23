@@ -1,11 +1,13 @@
 package Client.UI.Utility;
 
 import InventoryPackage.Inventory;
+import InventoryPackage.Invoice;
 import InventoryPackage.Item;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.time.format.DateTimeFormatter;
 
 public class MyListCellRenderer extends DefaultListCellRenderer {
     public  MyListCellRenderer(){
@@ -22,6 +24,10 @@ public class MyListCellRenderer extends DefaultListCellRenderer {
         if(value instanceof Item){
             Item i = (Item)value;
             setText(String.format("%s: %s", i.GetID(), i.GetName()));
+        }
+        if(value instanceof Invoice){
+            Invoice i = (Invoice) value;
+            setText(String.format("%s - %s", i.getID(), i.getCreateDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss"))));
         }
 
         setBorder(new EmptyBorder(5,5,5,5));

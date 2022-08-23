@@ -22,6 +22,7 @@ public class RMIRegistry {
             Registry reg = LocateRegistry.createRegistry(1099);
             reg.rebind("AccountServer", new AccountServer());
             reg.rebind("InventoryServer", new InventoryServer());
+            reg.rebind("InvoiceServer", new InvoiceServer());
 
             //TestAccountFunctions();
             //TestInventoryFunctions();

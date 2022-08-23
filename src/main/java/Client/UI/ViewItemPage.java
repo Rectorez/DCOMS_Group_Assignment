@@ -74,6 +74,9 @@ public class ViewItemPage extends JFrame implements ActionListener {
 
         table.setFont(DesignUI.defaultFont);
         table.setFillsViewportHeight(true);
+        table.setRowHeight(DesignUI.defaultFont.getSize() + 15);
+        table.getTableHeader().setPreferredSize(
+                new Dimension(table.getTableHeader().getPreferredSize().width, table.getTableHeader().getPreferredSize().height + 15));
         table.setDefaultRenderer(Object.class, new MyTableCellRenderer());
 
         scrollPane = new JScrollPane(table);

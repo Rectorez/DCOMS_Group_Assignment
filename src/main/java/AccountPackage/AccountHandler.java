@@ -80,6 +80,7 @@ public class AccountHandler {
     public static boolean AddAccount(AccountType accountType, Account newAccount) {
         if (HasExistingAccountFull(accountType, newAccount.GetUsername(), newAccount.GetPassword())) return false;
         AccountList.add(newAccount);
+        WriteAccountsToFile();
         return true;
     }
     public static boolean DeleteAccount(AccountType accountType, Account targetAccount) {
@@ -89,7 +90,9 @@ public class AccountHandler {
                 .findFirst()
                 .orElse(null);
         if (account == null) return false;
-        return account.Delete();
+        var success = account.Delete();
+        if(success) WriteAccountsToFile();
+        return success;
     }
 
     private static boolean WriteAccountsToFile(){

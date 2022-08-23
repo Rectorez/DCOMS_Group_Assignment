@@ -5,13 +5,17 @@ import Client.UI.DesignUI.ConfirmBtn;
 import Client.UI.DesignUI.DeleteBtn;
 import Client.UI.DesignUI.DiscardBtn;
 import Client.UI.Utility.MyListCellRenderer;
+import Client.UI.Utility.MyTableCellRenderer;
 import InventoryPackage.Inventory;
+import Server.InvoiceInterface;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,7 +23,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 
-public class SalesPage extends JFrame implements ActionListener {
+import static Client.Main.*;
+
+public class SalesPage extends JFrame implements ActionListener, ListSelectionListener {
 
     JPanel rootPanel, contentPanel, leftPanel, rightPanel, totalPanel, rightContentPanel, buttonPanel;
     JList list;
@@ -46,6 +52,7 @@ public class SalesPage extends JFrame implements ActionListener {
         list = new JList();
         list.setFont(DesignUI.defaultFont);
         list.setCellRenderer(new MyListCellRenderer());
+        list.addListSelectionListener(this);
         scrollPaneLeft = new JScrollPane();
         scrollPaneLeft.setViewportView(list);
 
@@ -71,6 +78,10 @@ public class SalesPage extends JFrame implements ActionListener {
             }
         };
         table.setFont(DesignUI.defaultFont);
+        table.setRowHeight(DesignUI.defaultFont.getSize() + 15);
+        table.getTableHeader().setPreferredSize(
+                new Dimension(table.getTableHeader().getPreferredSize().width, table.getTableHeader().getPreferredSize().height + 15));
+        table.setDefaultRenderer(Object.class, new MyTableCellRenderer());
         table.setFillsViewportHeight(true);
 
         scrollPaneRight = new JScrollPane(table);
@@ -126,6 +137,8 @@ public class SalesPage extends JFrame implements ActionListener {
         rootPanel.add(titleLabel, BorderLayout.NORTH);
         rootPanel.add(contentPanel, BorderLayout.CENTER);
         add(rootPanel);
+
+        updateList();
         setVisible(true);
     }
 
@@ -147,6 +160,23 @@ public class SalesPage extends JFrame implements ActionListener {
         else if(e.getSource() == discardBtn){
             new MenuPage();
             dispose();
+        }
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        //TODO copy update table code from newSalesPage
+        //Use InvoiceInterface instead of InvoiceHandler when accessing server item (eg. line 176 or 3rd line in 'updateList' function below)
+    }
+
+    public void updateList(){
+        try{
+            DefaultListModel model = new DefaultListModel();
+            InvoiceInterface.GetInvoices().forEach(x-> model.addElement(x));
+            list.setModel(model);
+        }
+        catch (RemoteException ex){
+            System.out.println("REMOTE EXCEPTION");
         }
     }
 }

@@ -13,9 +13,9 @@ public class Invoice implements Serializable {
     private LocalDateTime CreateDate;
 
     private String GenerateID() {
-        int value = InventoryHandler.GetFullInventories().size() + 1;
+        int value = InvoiceHandler.GetInvoice().size() + 1;
         int length = 6;
-        StringBuilder ID = new StringBuilder("INV-");
+        StringBuilder ID = new StringBuilder("INVO-");
         ID.append("0".repeat(length - String.valueOf(value).length()));
         ID.append(value);
         return ID.toString();

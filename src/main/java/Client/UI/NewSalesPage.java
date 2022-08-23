@@ -2,6 +2,7 @@ package Client.UI;
 
 import Client.UI.DesignUI.*;
 import Client.UI.Utility.MyListCellRenderer;
+import Client.UI.Utility.MyTableCellRenderer;
 import InventoryPackage.*;
 import Server.InventoryInterface;
 import Server.InventoryServer;
@@ -159,6 +160,10 @@ public class NewSalesPage extends JPanel implements ActionListener, ListSelectio
             }
         };
         table.setFont(DesignUI.defaultFont);
+        table.setRowHeight(DesignUI.defaultFont.getSize() + 15);
+        table.getTableHeader().setPreferredSize(
+                new Dimension(table.getTableHeader().getPreferredSize().width, table.getTableHeader().getPreferredSize().height + 15));
+        table.setDefaultRenderer(Object.class, new MyTableCellRenderer());
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setModel(model);
         table.setFillsViewportHeight(true);
@@ -220,6 +225,7 @@ public class NewSalesPage extends JPanel implements ActionListener, ListSelectio
         rootPanel.add(contentPanel, BorderLayout.CENTER);
         add(rootPanel, BorderLayout.CENTER);
         setVisible(true);
+        //TODO if possible auto set comboBox selected value to 'Computers' when user enter page
     }
 
     @Override
@@ -322,11 +328,14 @@ public class NewSalesPage extends JPanel implements ActionListener, ListSelectio
                         soldItems.put(model.getValueAt(i, 0).toString(), soldItemDetails);
                         soldItemDetails.clear();
                     }
-                    InvoiceHandler.AddInvoice(new Invoice(soldItems, Double.parseDouble(totalValueLabel.getText()), LocalDateTime.now()));
+                    InvoiceInterface.AddInvoice(InvoiceInterface.GenerateInvoice(soldItems, Double.parseDouble(totalValueLabel.getText()), LocalDateTime.now()));
                     //Serialize to Invoices.ser
                     //Serialize updated items in memory to Inventories.ser
+                    //Update: implemented in InvoiceHandler after modifying list
+
                 }
                 JDialog d = (JDialog) SwingUtilities.getRoot(this);
+                ((SalesPage)d.getParent()).updateList();
                 d.dispose();
             }
 

@@ -253,7 +253,9 @@ public class EditItemPage extends JFrame implements ActionListener, ListSelectio
                         invenComboBoxRight.getSelectedItem()).GetID(), nameTF.getText(),
                         Double.parseDouble(priceTF.getText()),  Double.parseDouble(costTF.getText()),
                         Integer.parseInt(storedTF.getText()), Integer.parseInt(soldTF.getText()));
-                InventoryInterface.UpdateItem(oldItem, newItem);
+                System.out.println(oldItem);
+                System.out.println(newItem);
+                System.out.println(InventoryInterface.UpdateItem(oldItem, newItem));
                 updateComboboxes();
             }
             else if(e.getSource() == invenComboBoxLeft){
