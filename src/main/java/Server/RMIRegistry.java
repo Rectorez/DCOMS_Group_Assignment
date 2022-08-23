@@ -6,11 +6,15 @@ import AccountPackage.AdminAccount;
 import AccountPackage.ExecutiveAccount;
 import InventoryPackage.Inventory;
 import InventoryPackage.InventoryHandler;
+import InventoryPackage.InventoryStatus;
 import InventoryPackage.Item;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RMIRegistry {
     public static void main(String[] args) throws RemoteException {
@@ -27,6 +31,13 @@ public class RMIRegistry {
             InventoryHandler.AddInventory(new Inventory("TEST INVENTORY", "TEST DESCRIPTION"));
             InventoryHandler.AddItem(new Item(InventoryHandler.GetInventories().get(0).GetID(), "TEST ITEM 1", 1.0, 2.0));
             InventoryHandler.AddItem(new Item(InventoryHandler.GetInventories().get(0).GetID(), "TEST ITEM 2", 1.0, 2.0));
+
+            Inventory computers = new Inventory("121212", "Computers", "desc", new ArrayList<>() , InventoryStatus.FILLED, LocalDateTime.now(), null);
+            Item item1 = new Item("1", "121212", "item1", 23.23, 21.21, 80, 0);
+            Item item2 = new Item("2", "121212", "item2", 24.24, 22.22, 100, 0);
+            InventoryHandler.AddInventory(computers);
+            InventoryHandler.AddItem(item1);
+            InventoryHandler.AddItem(item2);
 
             System.out.println("Server is ready!");
         } catch(RemoteException e) {

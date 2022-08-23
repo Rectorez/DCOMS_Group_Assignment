@@ -76,4 +76,10 @@ public class InventoryServer extends UnicastRemoteObject implements InventoryInt
     public boolean ExportItem(Item targetItem, int amount) {
         return InventoryHandler.ExportItem(targetItem, amount);
     }
+    public boolean RemoveItem(Item targetItem, int amount) {
+        return InventoryHandler.RemoveItem(targetItem, amount);
+    }
+//    public Item GetItem(Inventory inventory, String itemName) {
+//        return InventoryHandler.GetItem(inventory, itemName);
+//    }
 }

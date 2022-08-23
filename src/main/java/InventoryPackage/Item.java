@@ -115,6 +115,11 @@ public class Item implements Serializable {
         return true;
     }
 
+    public boolean Remove(int amount) {
+        if (amount < 0) return false;
+        SoldQuantity -= amount;
+        return true;
+    }
     @Override
     public String toString() {
         return "Item{" +

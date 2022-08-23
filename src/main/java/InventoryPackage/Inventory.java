@@ -110,6 +110,10 @@ public class Inventory implements Serializable {
         if (!ItemList.contains(targetItem)) return false;
         return ItemList.get(ItemList.indexOf(targetItem)).Export(amount);
     }
+    public boolean RemoveItem(Item targetItem, int amount) {
+        if (!ItemList.contains(targetItem)) return false;
+        return ItemList.get(ItemList.indexOf(targetItem)).Remove(amount);
+    }
 
     public boolean Delete() {
         if (Status == InventoryStatus.DELETED) return false;

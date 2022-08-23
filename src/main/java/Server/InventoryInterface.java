@@ -37,4 +37,6 @@ public interface InventoryInterface extends Remote {
     //Import / Export
     boolean ImportItem(Item targetItem, int amount) throws RemoteException;
     boolean ExportItem(Item targetItem, int amount) throws RemoteException;
+    boolean RemoveItem(Item targetItem, int amount) throws RemoteException;
+    //Item GetItem(Inventory inventory, String itemName) throws RemoteException;
 }

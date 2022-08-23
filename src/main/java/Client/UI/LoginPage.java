@@ -3,7 +3,6 @@ package Client.UI;
 import AccountPackage.AccountType;
 import Client.UI.Compound.PanelRound;
 import Client.UI.Compound.PanelRoundBorder;
-import Server.GUIInterface;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -21,7 +20,7 @@ import java.rmi.server.UnicastRemoteObject;
 import static Client.Main.AccountInterface;
 import static Client.Main.currentAccount;
 
-public class LoginPage extends UnicastRemoteObject implements ActionListener, MouseListener, GUIInterface {
+public class LoginPage extends UnicastRemoteObject implements ActionListener, MouseListener {
 
     JFrame frame = new JFrame();
     JPanel rootPanel, leftPanel, rightPanel, radioPanel;
@@ -168,7 +167,7 @@ public class LoginPage extends UnicastRemoteObject implements ActionListener, Mo
         rootPanel.add(rightPanel, rootC);
 
         frame.add(rootPanel);
-        //frame.setVisible(true);
+        frame.setVisible(true);
         frame.validate();
 
     }
