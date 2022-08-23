@@ -7,6 +7,7 @@ import Client.UI.DesignUI.DiscardBtn;
 import Client.UI.Utility.MyListCellRenderer;
 import Client.UI.Utility.MyTableCellRenderer;
 import InventoryPackage.Inventory;
+import InventoryPackage.Invoice;
 import Server.InvoiceInterface;
 
 import javax.swing.*;
@@ -16,12 +17,18 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.math.RoundingMode;
 import java.rmi.RemoteException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import static Client.Main.*;
 
@@ -34,6 +41,9 @@ public class SalesPage extends JFrame implements ActionListener, ListSelectionLi
     AddBtn addBtn;
     DiscardBtn discardBtn;
     JLabel titleLabel, invoiceLabel, totalLabel, totalValueLabel;
+    DefaultTableModel model = new DefaultTableModel();
+    String[] columnNames = {"ID", "Inventory ID", "Name", "Quantity", "Price"};
+    DecimalFormat df = new DecimalFormat("0.00");
 
     public SalesPage(){
         setSize(1280, 720);
@@ -71,6 +81,22 @@ public class SalesPage extends JFrame implements ActionListener, ListSelectionLi
         invoiceLabel = new JLabel("Invoice");
         invoiceLabel.setFont(DesignUI.defaultFontBold);
 
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        model.setColumnIdentifiers(columnNames);
+        model.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                double invoiceSum = 0;
+                if(model.getRowCount() != 0) {
+                    for(int i = 0; i < model.getRowCount(); i++) {
+                        invoiceSum += Double.parseDouble(model.getValueAt(i, 4).toString());
+                    }
+                    totalValueLabel.setText(df.format(invoiceSum));
+                } else {
+                    totalValueLabel.setText("0.00");
+                }
+            }
+        });
         table = new JTable(){
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -79,6 +105,7 @@ public class SalesPage extends JFrame implements ActionListener, ListSelectionLi
         };
         table.setFont(DesignUI.defaultFont);
         table.setRowHeight(DesignUI.defaultFont.getSize() + 15);
+        table.setModel(model);
         table.getTableHeader().setPreferredSize(
                 new Dimension(table.getTableHeader().getPreferredSize().width, table.getTableHeader().getPreferredSize().height + 15));
         table.setDefaultRenderer(Object.class, new MyTableCellRenderer());
@@ -86,7 +113,7 @@ public class SalesPage extends JFrame implements ActionListener, ListSelectionLi
 
         scrollPaneRight = new JScrollPane(table);
 
-        totalLabel = new JLabel("Total:");
+        totalLabel = new JLabel("Total (RM):");
         totalLabel.setFont(DesignUI.defaultFontBold);
         totalLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         totalValueLabel = new JLabel("RM0.00");
@@ -167,6 +194,17 @@ public class SalesPage extends JFrame implements ActionListener, ListSelectionLi
     public void valueChanged(ListSelectionEvent e) {
         //TODO copy update table code from newSalesPage
         //Use InvoiceInterface instead of InvoiceHandler when accessing server item (eg. line 176 or 3rd line in 'updateList' function below)
+        if (!e.getValueIsAdjusting()) {
+            model.setRowCount(0);
+            ArrayList<String> values;
+            String key;
+            Invoice selectedInvoice = (Invoice) list.getSelectedValue();
+            for(int j = 0; j < selectedInvoice.getSoldItemList().size(); j++) {
+                key = selectedInvoice.getSoldItemList().keySet().toArray()[j].toString();
+                values = selectedInvoice.getSoldItemList().get(key);
+                model.addRow(new Object[]{key, values.get(0), values.get(1), values.get(2), values.get(3)});
+            }
+        }
     }
 
     public void updateList(){

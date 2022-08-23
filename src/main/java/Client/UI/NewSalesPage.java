@@ -69,7 +69,7 @@ public class NewSalesPage extends JPanel implements ActionListener, ListSelectio
 
         invenComboBox = new JComboBox(InventoryInterface.GetInventories().stream().map(i -> i.GetName()).toArray(String[]::new));
         invenComboBox.setFont(DesignUI.defaultFont);
-        invenComboBox.setSelectedIndex(-1);
+        invenComboBox.setSelectedIndex(1);
         invenComboBox.addActionListener(this);
 
 
@@ -78,6 +78,10 @@ public class NewSalesPage extends JPanel implements ActionListener, ListSelectio
         invenPanel.add(invenComboBox, BorderLayout.CENTER);
 
         itemListModel = new DefaultListModel();
+        InventoryInterface.GetInventories().stream()
+                .filter(i -> i.GetName().equals(invenComboBox.getSelectedItem()))
+                .findFirst().get().GetItemList().stream()
+                .map(i -> i.GetName()).forEach(itemListModel::addElement);
         list = new JList(itemListModel);
         list.setFont(DesignUI.defaultFont);
         list.setCellRenderer(new MyListCellRenderer());
@@ -232,7 +236,7 @@ public class NewSalesPage extends JPanel implements ActionListener, ListSelectio
     public void actionPerformed(ActionEvent e) {
         try {
             if(e.getSource() == addBtn){
-                if(invenComboBox.getSelectedIndex() != -1) {
+                if(invenComboBox.getSelectedIndex() != -1 && !list.isSelectionEmpty()) {
                     boolean duplicate = false;
                     currentQty = Integer.parseInt(quantityValLabel.getText());
                     selectedItem = InventoryInterface.GetInventories().stream()
@@ -260,19 +264,14 @@ public class NewSalesPage extends JPanel implements ActionListener, ListSelectio
                                     df.format(selectedItem.GetPrice() * currentQty)
                             });
                         }
-                        System.out.println("Remaining from local: " + (selectedItem.GetStoredQuantity() - selectedItem.GetSoldQuantity()));
-                        System.out.println("Remaining from inventoryList: " + (InventoryInterface.GetInventories().stream().filter(i -> i.GetName().equals(invenComboBox.getSelectedItem().toString())).findFirst().get().GetItemList().stream().filter(i -> i.GetName().equals(selectedItem.GetName())).findFirst().get().GetStoredQuantity() - InventoryInterface.GetInventories().stream().filter(i -> i.GetName().equals(invenComboBox.getSelectedItem().toString())).findFirst().get().GetItemList().stream().filter(i -> i.GetName().equals(selectedItem.GetName())).findFirst().get().GetSoldQuantity()));
-                        System.out.println(selectedItem.GetSoldQuantity());
-
 
                     } else if (!InventoryInterface.ExportItem(selectedItem, currentQty)) {
-
                         JOptionPane.showMessageDialog(this, "Insufficient stock. Available quantity: " + (selectedItem.GetStoredQuantity() - selectedItem.GetSoldQuantity()));
-                        System.out.println("Remaining from inventoryList: " + (InventoryInterface.GetInventories().stream().filter(i -> i.GetName().equals(invenComboBox.getSelectedItem().toString())).findFirst().get().GetItemList().stream().filter(i -> i.GetName().equals(selectedItem.GetName())).findFirst().get().GetStoredQuantity() - InventoryInterface.GetInventories().stream().filter(i -> i.GetName().equals(invenComboBox.getSelectedItem().toString())).findFirst().get().GetItemList().stream().filter(i -> i.GetName().equals(selectedItem.GetName())).findFirst().get().GetSoldQuantity()));
-
                     } else {
                         JOptionPane.showMessageDialog(this, "Please select item and quantity.");
                     }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Please select an item first.");
                 }
             }
 
@@ -319,20 +318,15 @@ public class NewSalesPage extends JPanel implements ActionListener, ListSelectio
                     JOptionPane.showMessageDialog(this, "Nothing to confirm.");
                 } else {
                     HashMap<String, ArrayList<String>> soldItems = new HashMap<>();
-                    ArrayList<String> soldItemDetails = new ArrayList<>();
                     for(int i = 0; i < model.getRowCount(); i++) {
+                        ArrayList<String> soldItemDetails = new ArrayList<>();
                         soldItemDetails.add(model.getValueAt(i, 1).toString());
                         soldItemDetails.add(model.getValueAt(i, 2).toString());
                         soldItemDetails.add(model.getValueAt(i, 3).toString());
                         soldItemDetails.add(model.getValueAt(i, 4).toString());
                         soldItems.put(model.getValueAt(i, 0).toString(), soldItemDetails);
-                        soldItemDetails.clear();
                     }
                     InvoiceInterface.AddInvoice(InvoiceInterface.GenerateInvoice(soldItems, Double.parseDouble(totalValueLabel.getText()), LocalDateTime.now()));
-                    //Serialize to Invoices.ser
-                    //Serialize updated items in memory to Inventories.ser
-                    //Update: implemented in InvoiceHandler after modifying list
-
                 }
                 JDialog d = (JDialog) SwingUtilities.getRoot(this);
                 ((SalesPage)d.getParent()).updateList();

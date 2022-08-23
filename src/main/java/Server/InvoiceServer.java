@@ -18,7 +18,7 @@ public class InvoiceServer extends UnicastRemoteObject implements InvoiceInterfa
 
     @Override
     public List<Invoice> GetInvoices() throws RemoteException {
-        return InvoiceHandler.GetInvoice();
+        return InvoiceHandler.GetInvoices();
     }
 
     @Override

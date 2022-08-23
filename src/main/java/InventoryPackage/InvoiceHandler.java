@@ -14,12 +14,8 @@ public class InvoiceHandler {
         return InvoiceList;
     }
 
-    public static List<Invoice> GetInvoice() {
-        return InvoiceList;
-    }
-
     public static boolean AddInvoice(Invoice invoice) {
-        if (GetInvoice().stream().anyMatch(i -> i.equals(invoice))) return false;
+        if (GetInvoices().stream().anyMatch(i -> i.equals(invoice))) return false;
         InvoiceList.add(invoice);
         WriteInvoicesToFile();
         return true;
@@ -51,7 +47,7 @@ public class InvoiceHandler {
     }
 
     private static boolean ReadInvoicesToList() {
-        File target = Path.of(System.getProperty("user.dir"), "ServerDatabase", "Inventories.ser").toFile();
+        File target = Path.of(System.getProperty("user.dir"), "ServerDatabase", "Invoices.ser").toFile();
         if(target.exists()){
             try {
                 FileInputStream file = new FileInputStream(target);
