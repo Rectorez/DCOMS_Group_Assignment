@@ -167,7 +167,7 @@ public class NewSalesPage extends JPanel implements ActionListener, ListSelectio
         table.setRowHeight(DesignUI.defaultFont.getSize() + 15);
         table.getTableHeader().setPreferredSize(
                 new Dimension(table.getTableHeader().getPreferredSize().width, table.getTableHeader().getPreferredSize().height + 15));
-        table.setDefaultRenderer(Object.class, new MyTableCellRenderer());
+        //table.setDefaultRenderer(Object.class, new MyTableCellRenderer());
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setModel(model);
         table.setFillsViewportHeight(true);
@@ -292,7 +292,6 @@ public class NewSalesPage extends JPanel implements ActionListener, ListSelectio
                     InventoryInterface.RemoveItem(selectedItem, itemQty);
                     selectedItem.Remove(itemQty);
                     model.removeRow(row);
-
                 }
             }
 
@@ -342,7 +341,6 @@ public class NewSalesPage extends JPanel implements ActionListener, ListSelectio
                             .map(j -> j.GetName()).forEach(itemListModel::addElement);
                     invenComboBoxSelected = invenComboBox.getSelectedIndex();
                 }
-
             }
 
             else if(e.getSource() == addQuantityBtn) {

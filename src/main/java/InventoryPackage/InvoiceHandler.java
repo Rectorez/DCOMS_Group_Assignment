@@ -46,7 +46,7 @@ public class InvoiceHandler {
         }
     }
 
-    private static boolean ReadInvoicesToList() {
+    public static boolean ReadInvoicesToList() {
         File target = Path.of(System.getProperty("user.dir"), "ServerDatabase", "Invoices.ser").toFile();
         if(target.exists()){
             try {

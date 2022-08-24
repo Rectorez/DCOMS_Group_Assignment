@@ -31,4 +31,7 @@ public class InvoiceServer extends UnicastRemoteObject implements InvoiceInterfa
         return new Invoice(soldItemList, total, createDate);
     }
 
+    public boolean ReadInvoicesToList() throws RemoteException {
+        return InvoiceHandler.ReadInvoicesToList();
+    }
 }

@@ -199,10 +199,12 @@ public class SalesPage extends JFrame implements ActionListener, ListSelectionLi
             ArrayList<String> values;
             String key;
             Invoice selectedInvoice = (Invoice) list.getSelectedValue();
-            for(int j = 0; j < selectedInvoice.getSoldItemList().size(); j++) {
-                key = selectedInvoice.getSoldItemList().keySet().toArray()[j].toString();
-                values = selectedInvoice.getSoldItemList().get(key);
-                model.addRow(new Object[]{key, values.get(0), values.get(1), values.get(2), values.get(3)});
+            if(selectedInvoice != null) {
+                for(int j = 0; j < selectedInvoice.getSoldItemList().size(); j++) {
+                    key = selectedInvoice.getSoldItemList().keySet().toArray()[j].toString();
+                    values = selectedInvoice.getSoldItemList().get(key);
+                    model.addRow(new Object[]{key, values.get(0), values.get(1), values.get(2), values.get(3)});
+                }
             }
         }
     }

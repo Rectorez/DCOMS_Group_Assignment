@@ -20,4 +20,6 @@ public interface InvoiceInterface extends Remote {
 
     //ObjectGeneration
     Invoice GenerateInvoice(HashMap<String, ArrayList<String>> soldItemList, double total, LocalDateTime createDate) throws  RemoteException;
+
+    boolean ReadInvoicesToList() throws RemoteException;
 }

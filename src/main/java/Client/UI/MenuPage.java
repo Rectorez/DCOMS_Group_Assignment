@@ -10,6 +10,7 @@ import java.awt.event.*;
 import java.nio.file.Path;
 import java.rmi.RemoteException;
 
+import static Client.Main.InvoiceInterface;
 import static Client.Main.currentAccount;
 
 public class MenuPage extends JFrame implements MouseListener, ComponentListener {
@@ -145,6 +146,11 @@ public class MenuPage extends JFrame implements MouseListener, ComponentListener
                 JOptionPane.showMessageDialog(this, "This function is not available for admin account",
                         "Warning", JOptionPane.WARNING_MESSAGE);
                 return;
+            }
+            try {
+                InvoiceInterface.ReadInvoicesToList();
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
             }
             new SalesPage();
             dispose();
