@@ -248,15 +248,24 @@ public class EditItemPage extends JFrame implements ActionListener, ListSelectio
                 dispose();
             }
             else if(e.getSource() == confirmBtn){
-                Item oldItem = (Item) list.getSelectedValue();
-                Item newItem = InventoryInterface.GenerateItem(idTF.getText(),((Inventory)
-                        invenComboBoxRight.getSelectedItem()).GetID(), nameTF.getText(),
-                        Double.parseDouble(priceTF.getText()),  Double.parseDouble(costTF.getText()),
-                        Integer.parseInt(storedTF.getText()), Integer.parseInt(soldTF.getText()));
-                System.out.println(oldItem);
-                System.out.println(newItem);
-                System.out.println(InventoryInterface.UpdateItem(oldItem, newItem));
-                updateComboboxes();
+                if (list.getSelectedIndex() < 0) return;
+
+                String password = JOptionPane.showInputDialog("Please enter password to verify editing.");
+                if(password.equals(currentAccount.GetPassword())) {
+                    Item oldItem = (Item) list.getSelectedValue();
+                    Item newItem = InventoryInterface.GenerateItem(idTF.getText(), ((Inventory)
+                                    invenComboBoxRight.getSelectedItem()).GetID(), nameTF.getText(),
+                            Double.parseDouble(priceTF.getText()), Double.parseDouble(costTF.getText()),
+                            Integer.parseInt(storedTF.getText()), Integer.parseInt(soldTF.getText()));
+                    System.out.println(oldItem);
+                    System.out.println(newItem);
+                    System.out.println(InventoryInterface.UpdateItem(oldItem, newItem));
+                    updateComboboxes();
+                }
+                else{
+                    JOptionPane.showMessageDialog(this, "Password does not match", "Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
             }
             else if(e.getSource() == invenComboBoxLeft){
                 System.out.println("Updating list");
