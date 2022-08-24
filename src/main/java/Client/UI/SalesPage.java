@@ -108,7 +108,7 @@ public class SalesPage extends JFrame implements ActionListener, ListSelectionLi
         table.setModel(model);
         table.getTableHeader().setPreferredSize(
                 new Dimension(table.getTableHeader().getPreferredSize().width, table.getTableHeader().getPreferredSize().height + 15));
-        table.setDefaultRenderer(Object.class, new MyTableCellRenderer());
+        //table.setDefaultRenderer(Object.class, new MyTableCellRenderer());
         table.setFillsViewportHeight(true);
 
         scrollPaneRight = new JScrollPane(table);
